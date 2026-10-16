@@ -3,7 +3,8 @@ from .models import Comentario, Nota, Projeto, Tarefa, Workspace
 
 @admin.register(Workspace)
 class WorkspaceAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'tipo', 'criado_em')
+    list_display = ('nome', 'tipo', 'dono', 'criado_em')
+    filter_horizontal = ('membros',)
     search_fields = ('nome',)
 
 @admin.register(Projeto)

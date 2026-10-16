@@ -3,6 +3,8 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
     ComentarioViewSet,
+    ItemPessoalViewSet,
+    EspacoPessoalViewSet,
     NotaViewSet,
     ProjetoViewSet,
     RegistroUsuarioView,
@@ -12,6 +14,8 @@ from .views import (
 )
 
 router = DefaultRouter()
+router.register(r'espacos-pessoais', EspacoPessoalViewSet, basename='espaco-pessoal')
+router.register(r'itens-pessoais', ItemPessoalViewSet, basename='item-pessoal')
 router.register(r'usuarios', UserViewSet)
 router.register(r'workspaces', WorkspaceViewSet)
 router.register(r'projetos', ProjetoViewSet)

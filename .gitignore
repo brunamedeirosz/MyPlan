@@ -216,3 +216,16 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Frontend e arquivos locais
+node_modules/
+.env.*
+!.env.example
+staticfiles/
+playwright-report/
+test-results/
+
+e2e.sqlite3
+e2e.sqlite3-journal
+
+.local-backups/
