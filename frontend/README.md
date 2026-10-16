@@ -1,16 +1,42 @@
-# React + Vite
+# MyPlan · Interface
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface do planner pessoal MyPlan, feita com React e Vite, com tema preto e layouts
+para celular e desktop. A tela reúne checklist, espaços pessoais e calendário de tarefas.
 
-Currently, two official plugins are available:
+Consulte o [README principal](../README.md) para instalação e execução.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Código principal
 
-## React Compiler
+- `src/main.jsx`: entrada da aplicação.
+- `src/PersonalApp.jsx`: conta, lista de tarefas e integração dos componentes.
+- `src/SpacesManager.jsx`: criação, renomeação e exclusão de espaços.
+- `src/TaskCalendar.jsx`: calendário e agenda diária de todos os espaços.
+- `src/planner.css`: estilos ativos consolidados e tokens do tema.
+- `src/Icon.jsx`, `src/TaskRow.jsx` e `src/TaskEditor.jsx`: componentes reutilizáveis de ícones, tarefas e edição.
+- `src/TaskViews.jsx` e `src/plannerFilters.js`: visões e regras compartilhadas de filtro, agrupamento e ordenação.
+- `src/PlannerDialogs.jsx`: confirmação de exclusão e preferências.
+- `public/fonts/`: fonte Inter e licença OFL.
+- `src/api.js`: conexão com a API e renovação de sessão.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Comandos
 
-## Expanding the ESLint configuration
+```powershell
+npm.cmd run dev
+npm.cmd run lint
+npm.cmd test
+npm.cmd run build
+npm.cmd run test:e2e
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+As tarefas são persistidas pela API Django. `VITE_API_URL` define o endereço da API.
+Os testes ativos do Playwright estão em `e2e/personal.spec.js` e usam banco e portas separados.
+
+## Compatibilidade
+
+O código anterior de equipes permanece em `src/App.jsx` e não é a entrada da interface atual.
+As chaves internas de sessão com prefixo `devdesk_` foram preservadas para manter os logins existentes.
+
+
+`personal.css` e `theme-dark.css` ficam como referência das versões anteriores, fora
+da entrada ativa. A stack permanece JavaScript; não há um script de typecheck configurado.
+O Prettier foi usado apenas para formatar os arquivos, sem adicionar dependência ao projeto.
