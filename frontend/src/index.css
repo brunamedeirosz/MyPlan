@@ -1401,3 +1401,9 @@ textarea.form-input {
     padding-top: 1rem;
   }
 }
+
+.getting-started { margin-bottom: 1.25rem; }
+.getting-started p, .quick-setup > p { color: var(--text-muted, #94a3b8); line-height: 1.6; }
+.getting-started .btn { display: inline-flex; margin-top: .5rem; }
+.quick-setup { margin: 1.25rem 0; max-width: 720px; }
+.quick-setup .composer-header h2 { margin-bottom: 0; }

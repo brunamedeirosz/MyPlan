@@ -1,21 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useEffect, useMemo, useState } from 'react';
-import axios from 'axios';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { api } from './api';
+import { toApiDate, toLocalDateTime } from './dates';
+import WorkspaceMembers from './WorkspaceMembers';
+import ProjectSetup from './ProjectSetup';
 import './index.css';
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/',
-});
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('devdesk_token');
-
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-
-  return config;
-});
 
 const emptyProjectForm = {
   nome: '',
@@ -82,7 +71,7 @@ function StatusBadge({ value }) {
 }
 
 function Notice({ type = 'info', children }) {
-  return <div className={`notice ${type}`}>{children}</div>;
+  return <div className={`notice ${type}`} role={type === 'error' ? 'alert' : 'status'}>{children}</div>;
 }
 
 function getStatusGroup(value) {
@@ -312,12 +301,15 @@ function FloatingNoteManager({ auth }) {
   const [loading, setLoading] = useState(true);
   const [newItem, setNewItem] = useState('');
   const [dragState, setDragState] = useState(null);
+  const [error, setError] = useState('');
+  const saveQueue = useRef(Promise.resolve());
 
   const loadNote = () => {
     setLoading(true);
+    setError('');
     api.get('notas/')
       .then((res) => setNote(res.data[0] || null))
-      .catch(err => console.error(err))
+      .catch(err => setError(getErrorMessage(err, 'Nao foi possivel salvar a nota.')))
       .finally(() => setLoading(false));
   };
 
@@ -334,10 +326,15 @@ function FloatingNoteManager({ auth }) {
 
     const nextNote = { ...note, ...changes };
     setNote(nextNote);
-    api.patch(`notas/${note.id}/`, changes).catch(err => console.error(err));
+    const { titulo, itens, itens_concluidos, pos_x, pos_y, fixada, visivel } = nextNote;
+    saveQueue.current = saveQueue.current.catch(() => {}).then(() => api.patch(`notas/${note.id}/`, {
+      titulo, itens, itens_concluidos, pos_x, pos_y, fixada, visivel,
+    })).then(() => setError('')).catch(err => setError(getErrorMessage(err, 'Nao foi possivel salvar a nota.')));
   };
 
   const createNote = () => {
+    setLoading(true);
+    setError('');
     api.post('notas/', {
       titulo: 'Minha nota',
       itens: [],
@@ -346,7 +343,7 @@ function FloatingNoteManager({ auth }) {
       pos_y: 120,
       fixada: false,
       visivel: true,
-    }).then(res => setNote(res.data)).catch(err => console.error(err));
+    }).then(res => setNote(res.data)).catch(err => setError(getErrorMessage(err, 'Nao foi possivel salvar a nota.'))).finally(() => setLoading(false));
   };
 
   const addItem = (event) => {
@@ -358,7 +355,7 @@ function FloatingNoteManager({ auth }) {
     }
 
     const item = {
-      id: `${Date.now()}-${Math.random()}`,
+      id: crypto.randomUUID(),
       texto,
     };
 
@@ -419,8 +416,8 @@ function FloatingNoteManager({ auth }) {
       return;
     }
 
-    const nextX = Math.max(8, dragState.posX + event.clientX - dragState.startX);
-    const nextY = Math.max(86, dragState.posY + event.clientY - dragState.startY);
+    const nextX = Math.max(8, Math.min(window.innerWidth - 320, dragState.posX + event.clientX - dragState.startX));
+    const nextY = Math.max(8, Math.min(window.innerHeight - 80, dragState.posY + event.clientY - dragState.startY));
     setNote({ ...note, pos_x: nextX, pos_y: nextY });
   };
 
@@ -429,10 +426,7 @@ function FloatingNoteManager({ auth }) {
       return;
     }
 
-    api.patch(`notas/${note.id}/`, {
-      pos_x: note.pos_x,
-      pos_y: note.pos_y,
-    }).catch(err => console.error(err));
+    persistNote({ pos_x: note.pos_x, pos_y: note.pos_y });
     setDragState(null);
   };
 
@@ -442,25 +436,31 @@ function FloatingNoteManager({ auth }) {
 
   if (!note || !note.visivel) {
     return (
-      <button className="floating-note-launcher" onClick={note ? () => persistNote({ visivel: true }) : createNote}>
+      <>
+      {error && <div className="notice error" role="alert">{error} <button onClick={loadNote}>Tentar novamente</button></div>}
+      <button disabled={Boolean(error)} className="floating-note-launcher" onClick={note ? () => persistNote({ visivel: true }) : createNote}>
         Nota
       </button>
+      </>
     );
   }
 
   return (
     <aside
       className={`floating-note ${note.fixada ? 'fixed' : ''}`}
-      style={{ left: `${note.pos_x}px`, top: `${note.pos_y}px` }}
+      style={{ left: `${Math.max(8, Math.min(window.innerWidth - 320, note.pos_x))}px`, top: `${Math.max(8, Math.min(window.innerHeight - 80, note.pos_y))}px` }}
     >
       <div
         className="floating-note-header"
         onPointerDown={startDrag}
         onPointerMove={moveDrag}
         onPointerUp={endDrag}
+        onPointerCancel={endDrag}
       >
         <input
           className="note-title-input"
+          aria-label="Titulo da nota"
+          maxLength={120}
           value={note.titulo}
           onChange={event => persistNote({ titulo: event.target.value })}
         />
@@ -473,6 +473,7 @@ function FloatingNoteManager({ auth }) {
       </div>
 
       <div className="note-paper">
+        {error && <div role="alert">{error} <button onClick={() => persistNote({})}>Tentar salvar novamente</button></div>}
         <form className="note-add-form" onSubmit={addItem}>
           <input
             placeholder="Nova linha do checklist"
@@ -547,6 +548,7 @@ function Dashboard() {
   }), [data]);
 
   const proximasTarefas = data.tarefas
+    .filter(tarefa => tarefa.status !== 'Concluido')
     .slice()
     .sort((a, b) => {
       if (!a.prazo_entrega && !b.prazo_entrega) {
@@ -570,7 +572,7 @@ function Dashboard() {
       <PageHeader
         title="Dashboard"
         description="Resumo rapido do trabalho em andamento."
-        action={<button className="btn primary" onClick={() => navigate('/tarefas')}>Nova tarefa</button>}
+        action={<button className="btn primary" onClick={() => navigate('/tarefas?nova=1')}>Nova tarefa</button>}
       />
 
       {error && <Notice type="error">{error}</Notice>}
@@ -578,6 +580,14 @@ function Dashboard() {
         <Notice>Carregando informacoes...</Notice>
       ) : (
         <>
+          {!error && data.tarefas.length === 0 && (
+            <div className="panel getting-started">
+              <span className="eyebrow">Seu primeiro passo</span>
+              <h2>Vamos criar sua primeira tarefa?</h2>
+              <p>Você pode preparar seu workspace e projeto pelo próprio quadro, sem sair da tela.</p>
+              <Link className="btn primary" to="/tarefas?nova=1">Criar minha primeira tarefa</Link>
+            </div>
+          )}
           <div className="stats-grid">
             <div className="stat-card">
               <span>Workspaces</span>
@@ -828,6 +838,7 @@ function WorkspaceDetail() {
               ))}
             </div>
           )}
+        {workspace && <WorkspaceMembers workspace={workspace} onChange={setWorkspace} />}
         </>
       )}
     </section>
@@ -869,7 +880,7 @@ function Projetos() {
       nome: projeto.nome,
       descricao: projeto.descricao,
       status: projeto.status,
-      prazo_entrega: projeto.prazo_entrega ? projeto.prazo_entrega.slice(0, 16) : '',
+      prazo_entrega: toLocalDateTime(projeto.prazo_entrega),
       workspace: String(projeto.workspace),
     });
   };
@@ -905,8 +916,8 @@ function Projetos() {
     setError('');
 
     const request = editingProject
-      ? api.patch(`projetos/${editingProject.id}/`, formData)
-      : api.post('projetos/', formData);
+      ? api.patch(`projetos/${editingProject.id}/`, { ...formData, prazo_entrega: toApiDate(formData.prazo_entrega) })
+      : api.post('projetos/', { ...formData, prazo_entrega: toApiDate(formData.prazo_entrega) });
 
     request.then((res) => {
       if (editingProject) {
@@ -931,6 +942,7 @@ function Projetos() {
 
       <div className="content-grid">
         <form className="panel form-panel" onSubmit={handleSubmit}>
+          {workspaces.length > 0 && !workspaces.some(item => item.pode_gerenciar) && <Notice>Somente o gestor pode criar ou editar projetos.</Notice>}
           <div className="form-panel-header">
             <h2>{editingProject ? 'Editar projeto' : 'Novo projeto'}</h2>
             {editingProject && (
@@ -949,7 +961,6 @@ function Projetos() {
           <label>
             Descricao
             <textarea
-              required
               className="form-input"
               rows="4"
               value={formData.descricao}
@@ -961,11 +972,12 @@ function Projetos() {
             <select
               required
               className="form-input"
+              aria-label="Workspace"
               value={formData.workspace}
               onChange={event => setFormData({ ...formData, workspace: event.target.value })}
             >
               <option value="">Selecione</option>
-              {workspaces.map(workspace => (
+              {workspaces.filter(workspace => workspace.pode_gerenciar).map(workspace => (
                 <option key={workspace.id} value={workspace.id}>{workspace.nome}</option>
               ))}
             </select>
@@ -986,14 +998,13 @@ function Projetos() {
           <label>
             Prazo
             <input
-              required
               className="form-input"
               type="datetime-local"
               value={formData.prazo_entrega}
               onChange={event => setFormData({ ...formData, prazo_entrega: event.target.value })}
             />
           </label>
-          <button className="btn primary" disabled={saving || workspaces.length === 0} type="submit">
+          <button className="btn primary" disabled={saving || !workspaces.some(workspace => workspace.pode_gerenciar)} type="submit">
             {saving ? 'Salvando' : editingProject ? 'Salvar alteracoes' : 'Salvar projeto'}
           </button>
         </form>
@@ -1020,8 +1031,8 @@ function Projetos() {
                   <span>Prazo: {formatDate(projeto.prazo_entrega)}</span>
                   <div className="card-actions">
                     <Link to={`/projetos/${projeto.id}`}>Abrir projeto</Link>
-                    <button type="button" onClick={event => startEditingProject(event, projeto)}>Editar</button>
-                    <button type="button" className="danger-action" onClick={event => deleteProject(event, projeto)}>Excluir</button>
+                    {projeto.pode_gerenciar && <button type="button" onClick={event => startEditingProject(event, projeto)}>Editar</button>}
+                    {projeto.pode_gerenciar && <button type="button" className="danger-action" onClick={event => deleteProject(event, projeto)}>Excluir</button>}
                   </div>
                 </div>
               ))}
@@ -1082,7 +1093,7 @@ function ProjetoDetail() {
       nome: projeto.nome,
       descricao: projeto.descricao,
       status: projeto.status,
-      prazo_entrega: projeto.prazo_entrega ? projeto.prazo_entrega.slice(0, 16) : '',
+      prazo_entrega: toLocalDateTime(projeto.prazo_entrega),
       workspace: String(projeto.workspace),
     });
   };
@@ -1092,7 +1103,7 @@ function ProjetoDetail() {
     setSaving(true);
     setError('');
 
-    api.patch(`projetos/${projeto.id}/`, formData).then((res) => {
+    api.patch(`projetos/${projeto.id}/`, { ...formData, prazo_entrega: toApiDate(formData.prazo_entrega) }).then((res) => {
       setProjeto(res.data);
       setEditing(false);
     }).catch(err => setError(getErrorMessage(err, 'Nao foi possivel editar o projeto.')))
@@ -1119,8 +1130,8 @@ function ProjetoDetail() {
         action={(
           <div className="header-actions">
             <button className="btn secondary" onClick={() => navigate('/projetos')}>Voltar</button>
-            {projeto && <button className="btn secondary" onClick={startEditing}>Editar</button>}
-            {projeto && <button className="btn danger" onClick={deleteProject}>Excluir</button>}
+            {projeto?.pode_gerenciar && <button className="btn secondary" onClick={startEditing}>Editar</button>}
+            {projeto?.pode_gerenciar && <button className="btn danger" onClick={deleteProject}>Excluir</button>}
           </div>
         )}
       />
@@ -1148,7 +1159,6 @@ function ProjetoDetail() {
               <label>
                 Descricao
                 <textarea
-                  required
                   className="form-input"
                   rows="4"
                   value={formData.descricao}
@@ -1160,10 +1170,11 @@ function ProjetoDetail() {
                 <select
                   required
                   className="form-input"
-                  value={formData.workspace}
+                  aria-label="Workspace"
+              value={formData.workspace}
                   onChange={event => setFormData({ ...formData, workspace: event.target.value })}
                 >
-                  {workspaces.map(workspace => (
+                  {workspaces.filter(workspace => workspace.pode_gerenciar).map(workspace => (
                     <option key={workspace.id} value={workspace.id}>{workspace.nome}</option>
                   ))}
                 </select>
@@ -1184,7 +1195,6 @@ function ProjetoDetail() {
               <label>
                 Prazo
                 <input
-                  required
                   className="form-input"
                   type="datetime-local"
                   value={formData.prazo_entrega}
@@ -1287,9 +1297,15 @@ function ProjetoDetail() {
 }
 
 function Tarefas({ auth }) {
+  const location = useLocation();
+  const [startCreating] = useState(() => new URLSearchParams(location.search).get('nova') === '1');
+  const [showSetup, setShowSetup] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [success, setSuccess] = useState('');
   const [tarefas, setTarefas] = useState([]);
   const [projetos, setProjetos] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
+  const [taskWorkspaces, setTaskWorkspaces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -1299,25 +1315,34 @@ function Tarefas({ auth }) {
   const [showComposer, setShowComposer] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
 
-  const loadData = () => {
+  const loadData = useCallback(() => {
     setLoading(true);
+    setLoadFailed(false);
     setError('');
 
     Promise.all([
       api.get('tarefas/'),
       api.get('projetos/'),
       api.get('usuarios/'),
-    ]).then(([tarefasRes, projetosRes, usuariosRes]) => {
+      api.get('workspaces/'),
+    ]).then(([tarefasRes, projetosRes, usuariosRes, workspacesRes]) => {
       setTarefas(tarefasRes.data);
       setProjetos(projetosRes.data);
       setUsuarios(usuariosRes.data);
-    }).catch(err => setError(getErrorMessage(err, 'Nao foi possivel carregar tarefas.')))
+      setTaskWorkspaces(workspacesRes.data);
+      if (startCreating) {
+        const project = projetosRes.data.find(item => item.pode_gerenciar);
+        setFormData({ ...emptyTaskForm, projeto: project ? String(project.id) : '' });
+        setShowSetup(!project);
+        setShowComposer(Boolean(project));
+      }
+    }).catch(err => { setLoadFailed(true); setError(getErrorMessage(err, 'Não foi possível carregar tarefas. Confira se o backend está rodando e clique em Atualizar.')); })
       .finally(() => setLoading(false));
-  };
+  }, [startCreating]);
 
   useEffect(() => {
     void Promise.resolve().then(loadData);
-  }, []);
+  }, [loadData]);
 
   const filteredTarefas = useMemo(() => {
     if (selectedProjeto === 'todos') {
@@ -1337,11 +1362,12 @@ function Tarefas({ auth }) {
     event.preventDefault();
     setSaving(true);
     setError('');
+    setSuccess('');
 
     const payload = {
       ...formData,
       responsavel: formData.responsavel || null,
-      prazo_entrega: formData.prazo_entrega || null,
+      prazo_entrega: toApiDate(formData.prazo_entrega),
     };
 
     const request = editingTask
@@ -1353,9 +1379,11 @@ function Tarefas({ auth }) {
         setTarefas(tarefas.map(tarefa => tarefa.id === editingTask.id ? res.data : tarefa));
         setEditingTask(null);
       } else {
-        setTarefas([...tarefas, res.data]);
+        setTarefas(current => [...current, res.data]);
+        setSelectedProjeto(String(res.data.projeto));
       }
 
+      setSuccess(editingTask ? 'Tarefa atualizada.' : 'Tarefa criada! Ela já está no quadro abaixo.');
       setFormData(emptyTaskForm);
       setShowComposer(false);
     }).catch(err => setError(getErrorMessage(err))).finally(() => setSaving(false));
@@ -1363,7 +1391,7 @@ function Tarefas({ auth }) {
 
   const updateTask = (taskId, changes) => {
     api.patch(`tarefas/${taskId}/`, changes).then((res) => {
-      setTarefas(tarefas.map(tarefa => tarefa.id === taskId ? res.data : tarefa));
+      setTarefas(current => current.map(tarefa => tarefa.id === taskId ? res.data : tarefa));
     }).catch(err => setError(getErrorMessage(err, 'Nao foi possivel atualizar a tarefa.')));
   };
 
@@ -1376,7 +1404,7 @@ function Tarefas({ auth }) {
     }
 
     api.post('comentarios/', { tarefa: tarefaId, texto }).then((res) => {
-      setTarefas(tarefas.map((tarefa) => {
+      setTarefas(current => current.map((tarefa) => {
         if (tarefa.id !== tarefaId) {
           return tarefa;
         }
@@ -1392,12 +1420,13 @@ function Tarefas({ auth }) {
 
   const openComposer = (status = 'A Fazer') => {
     setEditingTask(null);
-    setFormData({
-      ...emptyTaskForm,
-      status,
-      projeto: selectedProjeto === 'todos' ? '' : selectedProjeto,
-    });
-    setShowComposer(true);
+    setError('');
+    setSuccess('');
+    const managed = projetos.filter(project => project.pode_gerenciar);
+    const project = managed.find(item => String(item.id) === selectedProjeto) || managed[0];
+    setFormData({ ...emptyTaskForm, status, projeto: project ? String(project.id) : '' });
+    setShowSetup(!project);
+    setShowComposer(Boolean(project));
   };
 
   const startEditingTask = (tarefa) => {
@@ -1407,7 +1436,7 @@ function Tarefas({ auth }) {
       descricao: tarefa.descricao,
       prioridade: tarefa.prioridade,
       status: getStatusGroup(tarefa.status),
-      prazo_entrega: tarefa.prazo_entrega ? tarefa.prazo_entrega.slice(0, 16) : '',
+      prazo_entrega: toLocalDateTime(tarefa.prazo_entrega),
       projeto: String(tarefa.projeto || ''),
       responsavel: tarefa.responsavel ? String(tarefa.responsavel) : '',
     });
@@ -1460,11 +1489,12 @@ function Tarefas({ auth }) {
               <span>{(tarefa.comentarios || []).length} comentarios</span>
             </div>
             <div className="card-actions task-card-actions">
-              <button type="button" onClick={() => startEditingTask(tarefa)}>Editar</button>
-              <button type="button" className="danger-action" onClick={() => deleteTask(tarefa)}>Excluir</button>
+              {tarefa.pode_gerenciar && <button type="button" onClick={() => startEditingTask(tarefa)}>Editar</button>}
+              {tarefa.pode_gerenciar && <button type="button" className="danger-action" onClick={() => deleteTask(tarefa)}>Excluir</button>}
             </div>
             <select
               className="compact-select"
+              aria-label={`Status de ${tarefa.titulo}`}
               value={getStatusGroup(tarefa.status)}
               onChange={event => updateTask(tarefa.id, { status: event.target.value })}
             >
@@ -1500,7 +1530,7 @@ function Tarefas({ auth }) {
           </article>
         ))}
       </div>
-      <button className="add-card-button" onClick={() => openComposer(status)}>
+      <button className="add-card-button" disabled={loading || loadFailed} onClick={() => openComposer(status)}>
         + Nova tarefa
       </button>
     </div>
@@ -1522,13 +1552,31 @@ function Tarefas({ auth }) {
             ))}
           </select>
           <button className="btn secondary" onClick={loadData}>Atualizar</button>
-          <button className="btn primary" onClick={() => openComposer()}>Nova tarefa</button>
+          <button className="btn primary" disabled={loading || loadFailed} onClick={() => openComposer()}>Nova tarefa</button>
         </div>
       </div>
 
       {error && <Notice type="error">{error}</Notice>}
-      {projetos.length === 0 && !loading && (
-        <Notice>Crie um projeto antes de cadastrar tarefas.</Notice>
+      {success && <Notice>{success}</Notice>}
+      {!loading && !loadFailed && !showSetup && !showComposer && !projetos.some(project => project.pode_gerenciar) && (
+        <div className="panel getting-started">
+          <h2>{projetos.length === 0 ? 'Seu quadro começa aqui' : 'Crie um projeto para suas próprias tarefas'}</h2>
+          <p>{projetos.length === 0
+            ? 'Antes da primeira tarefa, vamos dar um nome ao workspace e ao projeto. Você faz tudo aqui.'
+            : 'Nos projetos em que você é colaborador, pode comentar e alterar o status. Para criar suas tarefas, prepare um projeto próprio ou peça ao gestor.'}</p>
+          <button className="btn primary" onClick={() => openComposer()}>Começar e criar tarefa</button>
+        </div>
+      )}
+      {showSetup && (
+        <ProjectSetup workspaces={taskWorkspaces} onCancel={() => setShowSetup(false)} onReady={(project, workspace) => {
+          setProjetos(current => [...current, project]);
+          setTaskWorkspaces(current => current.some(item => item.id === workspace.id) ? current : [...current, workspace]);
+          setFormData(current => ({ ...current, projeto: String(project.id), responsavel: '' }));
+          setSelectedProjeto(String(project.id));
+          setShowSetup(false);
+          setShowComposer(true);
+          setSuccess('Projeto pronto. Agora só falta o título da sua tarefa.');
+        }} />
       )}
 
       {showComposer && (
@@ -1537,7 +1585,10 @@ function Tarefas({ auth }) {
             <h2>{editingTask ? 'Editar tarefa' : 'Nova tarefa'}</h2>
             <button className="text-button" type="button" onClick={closeComposer}>Fechar</button>
           </div>
+          <p className="helper-text">Preencha o título. Descrição, responsável e prazo são opcionais.</p>
           <input
+            autoFocus
+            maxLength={255}
             required
             className="form-input composer-title"
             placeholder="Titulo da tarefa"
@@ -1545,32 +1596,38 @@ function Tarefas({ auth }) {
             onChange={event => setFormData({ ...formData, titulo: event.target.value })}
           />
           <textarea
-            required
             className="form-input"
             placeholder="Descricao"
             rows="3"
             value={formData.descricao}
             onChange={event => setFormData({ ...formData, descricao: event.target.value })}
           />
+          {!editingTask && <button className="text-button" type="button" onClick={() => { setShowComposer(false); setShowSetup(true); }}>+ Criar outro projeto</button>}
           <div className="composer-grid">
             <select
               required
               className="form-input"
+              aria-label="Projeto da tarefa"
               value={formData.projeto}
-              onChange={event => setFormData({ ...formData, projeto: event.target.value })}
+              onChange={event => setFormData({ ...formData, projeto: event.target.value, responsavel: '' })}
             >
               <option value="">Projeto</option>
-              {projetos.map(projeto => (
+              {projetos.filter(projeto => projeto.pode_gerenciar).map(projeto => (
                 <option key={projeto.id} value={projeto.id}>{projeto.nome}</option>
               ))}
             </select>
             <select
               className="form-input"
+              aria-label="Responsavel"
               value={formData.responsavel}
               onChange={event => setFormData({ ...formData, responsavel: event.target.value })}
             >
               <option value="">Responsavel</option>
-              {usuarios.map(usuario => (
+              {usuarios.filter(usuario => {
+                const project = projetos.find(item => String(item.id) === String(formData.projeto));
+                const workspace = taskWorkspaces.find(item => item.id === project?.workspace);
+                return workspace && (workspace.dono === usuario.id || workspace.membros.some(member => member.id === usuario.id));
+              }).map(usuario => (
                 <option key={usuario.id} value={usuario.id}>{usuario.username}</option>
               ))}
             </select>
@@ -1602,7 +1659,7 @@ function Tarefas({ auth }) {
               onChange={event => setFormData({ ...formData, prazo_entrega: event.target.value })}
             />
           </div>
-          <button className="btn primary" disabled={saving || projetos.length === 0} type="submit">
+          <button className="btn primary" disabled={saving || !projetos.some(projeto => projeto.pode_gerenciar)} type="submit">
             {saving ? 'Salvando' : editingTask ? 'Salvar alteracoes' : 'Adicionar tarefa'}
           </button>
         </form>
@@ -1628,6 +1685,12 @@ function AppShell() {
     token: localStorage.getItem('devdesk_token') || '',
     username: localStorage.getItem('devdesk_username') || '',
   });
+
+  useEffect(() => {
+    const onExpired = () => setAuth({ token: '', username: '' });
+    window.addEventListener('devdesk:session-expired', onExpired);
+    return () => window.removeEventListener('devdesk:session-expired', onExpired);
+  }, []);
 
   const handleLogin = ({ token, refreshToken, username }) => {
     localStorage.setItem('devdesk_token', token);
@@ -1668,7 +1731,7 @@ function AppShell() {
         )}
       </header>
 
-      <main className="app-main">
+      <main className="app-main" key={`pages-${auth.username}`}>
         <Routes>
           <Route path="/" element={auth.token ? <Dashboard /> : <LandingPage auth={auth} onLogin={handleLogin} onLogout={handleLogout} />} />
           <Route path="/workspaces" element={<ProtectedRoute auth={auth}><Workspaces /></ProtectedRoute>} />
@@ -1676,9 +1739,10 @@ function AppShell() {
           <Route path="/projetos" element={<ProtectedRoute auth={auth}><Projetos /></ProtectedRoute>} />
           <Route path="/projetos/:projetoId" element={<ProtectedRoute auth={auth}><ProjetoDetail /></ProtectedRoute>} />
           <Route path="/tarefas" element={<ProtectedRoute auth={auth}><Tarefas auth={auth} /></ProtectedRoute>} />
+          <Route path="*" element={<section className="page"><h1>Pagina nao encontrada</h1><Link to="/">Voltar ao inicio</Link></section>} />
         </Routes>
       </main>
-      <FloatingNoteManager auth={auth} />
+      <FloatingNoteManager key={`notes-${auth.username}`} auth={auth} />
     </div>
   );
 }
