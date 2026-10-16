@@ -1,0 +1,129 @@
+/* Tema preto: as cores dos espaços continuam sendo definidas por identidade. */
+:root{color-scheme:dark;color:#e9e9eb;background:#080809}
+body{background:#080809}
+button:focus-visible,a:focus-visible,input:focus-visible{outline-color:#92929b}
+.brand-bar{height:88px;max-width:1920px;padding:0 40px}
+.brand-link{font-size:26px;font-weight:550;letter-spacing:-1.3px;color:#f1f1f3}
+.brand-caption{border:0;padding-left:0;margin-left:auto;color:#777780;letter-spacing:2px;font-size:9px}
+.workspace-layout{background:#101012;border-color:#27272b;box-shadow:none}
+.sidebar,.calendar-panel{background:#0e0e10;border-color:#242428}
+.space-label,.spaces-section-heading,.calendar-kicker{color:#73737d}
+.nav-item{color:#9999a3}
+.nav-item.selected{background:#242428;color:#f0f0f3}
+.nav-item:hover{background:#202024}
+.nav-count{color:inherit}
+.space-nav{color:#a2a2ac}
+.space-nav.active{background:#222226;color:#f0f0f3}
+.space-nav:hover{background:#1d1d21}
+.profile{border-color:#26262b}
+.profile strong{color:#d5d5db}
+.profile div>span{color:#777781}
+.avatar{background:#29292e;color:#c8c8cf}
+.icon-button{color:#888893}
+.icon-button:hover{background:#2a2a30;color:#eeeeF0}
+.content-heading h1,.calendar-title h2{color:#ededf0;font-weight:500}
+.content-heading h1>span,.welcome-copy h1 span{color:#777780}
+.content-heading p,.date-label{color:#888892}
+.personal-label{background:#1b1b20;border-color:#2b2b31;color:#9d9da7}
+.personal-label>span{background:#92929d}
+.add-task{background:#17171b;border-color:#333339;box-shadow:none}
+.add-task:focus-within{border-color:#777781;box-shadow:0 0 0 3px #ffffff05}
+.add-outline{color:#8c8c96}
+.add-task input{color:#ededf0}
+.add-task input::placeholder{color:#7e7e89}
+.add-task kbd{color:#666670}
+.add-button{background:#e9e9ed;color:#19191d}
+.add-button:disabled{background:#2d2d34;color:#7e7e89}
+.task-space-picker,.task-space-picker>button{color:#9696a1}
+.task-space-picker select,.task-space-picker input[type=date]{background:#212126;color:#b4b4bf}
+.date-filter{background:#202025;color:#c2c2ca}
+.date-filter button{color:#a0a0ab}
+.list-toolbar>span{color:#8c8c97}
+.list-toolbar b{background:#24242b;color:#a5a5b0}
+.search-box,.search-box input,.search-box input::placeholder{color:#8d8d98}
+.task-row{border-color:#26262b}
+.task-check{border-color:#666671}
+.task-check:hover{background:#29292f;border-color:#b5b5c0}
+.is-done .task-check{background:#6a6a76;border-color:#6a6a76}
+.task-title{color:#dbdbe1}
+.task-space-name{color:#93939e}
+.task-due{color:#a6a6b0}
+.task-due.late{color:#d7a1ad}
+.is-done .task-title{color:#82828d}
+.star-tool:not(.is-important){color:#696974}
+.is-important{color:#d0b884}
+.delete-tool:hover{color:#e2a0ad;background:#38232a}
+.edit-task input,.edit-task select{background:#1b1b20;border-color:#44444d;color:#dddde5}
+.edit-task .edit-date{color:#b1b1bf}
+.edit-task button{background:#2a2a32;color:#dddde7}
+.empty-symbol{background:#202026;color:#9898a7}
+.empty-list{color:#9999a5}
+.empty-list h2{color:#b5b5bf}
+.empty-list p{color:#8c8c98}
+.completed-toggle{color:#9a9aa7}
+.completed-toggle span{color:#757582}
+.list-footer{border-color:#25252c;color:#72727d}
+.tiny-dot{background:#777783}
+.calendar-title>button{background:#25252c;color:#b4b4c0}
+.calendar-month{color:#b6b6c2}
+.calendar-month button{color:#9999a8}
+.calendar-month button:hover{background:#282830}
+.calendar-weekdays{color:#797987}
+.calendar-grid button{color:#b8b8c4}
+.calendar-grid button:hover{background:#292931}
+.calendar-grid button.outside-month{color:#555561}
+.calendar-grid button.active-day{background:#e4e4eb;color:#16161b}
+.calendar-grid button.today:not(.active-day){background:#2b2b33;color:#dedee8}
+.calendar-space-dot,.calendar-space-dot.is-completed{box-shadow:none}
+.calendar-space-legend,.calendar-history-hint{color:#9999a8}
+.calendar-history-hint i{border-color:#9999a8}
+.day-agenda{border-color:#29292f}
+.agenda-heading h3{color:#d0d0da}
+.agenda-heading>span{background:#27272f;color:#b2b2c2}
+.day-agenda li{border-color:#27272d}
+.day-agenda li>div>span{color:#c8c8d4}
+.agenda-check{color:#9999ad}
+.day-agenda small{color:#9696a8}
+.agenda-empty{color:#8e8e9e}
+.agenda-view-tasks{color:#b4b4c7}
+.overdue-summary{background:#2c1e25;color:#d6a6b4}
+.overdue-dot{background:#d6a6b4}
+.calendar-note{color:#828292}
+.day-agenda .agenda-completed>div>span{color:#79798a}
+.agenda-completed .agenda-check{color:#9898aa}
+.agenda-completed-label{background:#292933;color:#ababbd}
+.error-message{background:#321e26;color:#edb3c2}
+.undo-toast{background:#e5e5eb;color:#202026;box-shadow:0 6px 28px #0005}
+.undo-toast button{color:#4c4c5d}
+.spaces-dialog{background:#151519;border-color:#36363e;color:#dfdfe8;box-shadow:0 25px 100px #0008}
+.spaces-dialog::backdrop{background:#0009}
+.spaces-explanation{color:#9898a7}
+.spaces-edit-list li{border-color:#303038}
+.spaces-edit-list button,.spaces-close{color:#b3b3c6}
+.spaces-edit-list .remove-space{color:#cf99a9}
+.space-name-form input{background:#202027;border-color:#3b3b46;color:#e4e4ef}
+.space-delete-confirm{background:#291e25}
+.space-delete-confirm p,.space-delete-confirm button{color:#b8a3b0}
+.space-delete-confirm .danger-button{background:#a36578;color:white}
+.login-card{background:#121215;border-color:#2d2d34;box-shadow:none}
+.login-wordmark{display:block;font-size:20px;font-weight:550;letter-spacing:-1px;color:#e8e8ed;margin-bottom:28px}
+.login-card h2{color:#e5e5ec}
+.login-card>p,.login-card label{color:#a0a0b0}
+.login-card label span,.login-card small{color:#848497}
+.login-card input{background:#1b1b21;border-color:#393942;color:#ededf5}
+.primary-button{background:#e4e4eb;color:#202028}
+.primary-button:hover{background:#fff}
+.switch-auth,.switch-auth:hover{color:#aaaabe}
+.overline{color:#9090a4}
+.welcome-copy h1{color:#eeeeF4}
+.welcome-copy>p{color:#9797a9}
+@media(max-width:600px){
+  .brand-bar{height:76px;padding:0 24px}
+  .brand-caption{display:block;font-size:8px;letter-spacing:1.5px}
+  .sidebar{border-color:#292930;background:#0e0e11}
+  .spaces-section,.profile{border-color:#292930}
+  .profile strong{color:#a4a4b4}
+  .mobile-view-switch{background:#202027ed;border-color:#41414d;box-shadow:0 5px 25px #0005}
+  .mobile-view-switch button{color:#8c8ca2}
+  .mobile-view-switch button[aria-pressed=true]{background:#393944;color:#ededf5;box-shadow:none}
+}
