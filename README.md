@@ -4,11 +4,11 @@ Seu dia, organizado.
 
 **MyPlan** é um planner pessoal para reunir tarefas, checklists e prazos em um só lugar.
 Separe as demandas da vida pessoal, do trabalho e dos estudos e acompanhe tudo pelo
-calendário. A interface é minimalista, com tema preto, destaques em tons de cinza e fonte Inter hospedada no próprio projeto. Adapta-se ao celular e ao desktop.
+calendário. A interface é minimalista, com modos claro e escuro, destaques em tons de cinza e fonte Inter hospedada no próprio projeto. Adapta-se ao celular e ao desktop.
 
 ## Funcionalidades
 
-- **Tarefas e checklist:** crie com um título, acrescente descrição e subtarefas pelo editor e marque cada etapa como concluída.
+- **Tarefas e checklist:** lista compacta com conclusão por toque. As tarefas aparecem primeiro; o campo de adicionar fica abaixo. Acrescente descrição e subtarefas pelo editor e marque cada etapa como concluída.
 - **Organização:** edite pelo modal, escolha prioridade baixa, média ou alta, destaque tarefas importantes e filtre ou ordene por prazo, prioridade, espaço e situação.
 - **Espaços pessoais:** Pessoal, Trabalho e Estudos vêm prontos; você pode criar, renomear, excluir e mover tarefas entre espaços.
 - **Calendário:** defina prazos opcionais e veja as tarefas de todos os espaços, identificadas por cores.
@@ -16,11 +16,13 @@ calendário. A interface é minimalista, com tema preto, destaques em tons de ci
 - **Pendências e histórico:** navegue por Hoje e Importantes, acompanhe atrasos e mantenha as tarefas concluídas no calendário.
 - **Visualizações:** alterne entre Lista, Semana e Calendário sem trocar a fonte de dados.
 - **Recorrência:** repita tarefas diariamente, semanalmente ou mensalmente. Ao concluir uma ocorrência, a próxima é criada com o checklist reiniciado.
-- **Preferências:** recolha painéis, escolha lista compacta ou inclua concluídas pela tela de configurações.
+- **Preferências:** alterne entre modo claro e escuro pelo ícone de sol/lua no topo ou pelas configurações. A escolha fica salva neste navegador. Também é possível recolher painéis, usar lista compacta e incluir concluídas.
+- **Tempo hoje:** consulte temperatura atual, mínima, máxima e chance de chuva pela Open-Meteo. Ao abrir, permita a localização para ver a previsão da sua região automaticamente. O card fica aberto acima do calendário; a busca manual por cidade continua disponível em **Localização e opções**.
 - **Conta pessoal:** suas tarefas e espaços são salvos no banco e isolados das outras contas.
 
 No desktop, lista e calendário aparecem lado a lado. No celular, a navegação inferior
-permite alternar entre Tarefas e Calendário.
+permite alternar entre Tarefas, Semana e Calendário. O botão **Menu** abre um painel lateral com filtros, espaços e conta.
+A previsão aparece numa faixa compacta no celular; mínima, máxima e chance de chuva ficam em **Opções**.
 
 ## Começar a usar
 
@@ -152,3 +154,19 @@ o dia original, limitado ao último dia dos meses mais curtos.
 Reabrir e concluir novamente uma ocorrência não duplica a próxima tarefa já existente.
 Desfazer a exclusão de uma ocorrência concluída que já gerou a próxima restaura o item
 como histórico sem repetição, preservando a próxima ocorrência independente.
+
+## Previsão do tempo
+
+O resumo consulta diretamente a [Open-Meteo](https://open-meteo.com/en/docs), sem chave de API,
+usando a localização aproximada após a permissão do navegador ou uma cidade escolhida manualmente. As coordenadas do dispositivo são arredondadas para duas casas decimais e ficam apenas na memória;
+a preferência de modo e as cidades escolhidas manualmente ficam salvas neste navegador.
+Ao negar a permissão, a busca por cidade continua disponível. A opção **Desativar tempo**
+interrompe o modo automático até a pessoa ativá-lo novamente.
+A busca de cidades usa a API de geocodificação da
+Open-Meteo, com dados do GeoNames. As requisições externas não incluem tokens do MyPlan.
+A previsão é atualizada a cada 30 minutos com a página visível e pode ser atualizada manualmente.
+Falhas do serviço não impedem o uso das tarefas. O resumo mostra o tempo de hoje na cidade
+escolhida, independentemente da data selecionada no calendário.
+
+A API gratuita é destinada a uso não comercial e tem limites de chamadas. Antes de uma
+oferta comercial, consulte os [termos da Open-Meteo](https://open-meteo.com/en/terms).

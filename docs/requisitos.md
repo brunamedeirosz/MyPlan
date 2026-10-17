@@ -20,17 +20,19 @@ ampla das demandas no desktop.
 - Repetir tarefas diária, semanal ou mensalmente ao concluir.
 - Consultar Hoje e Importantes e ordenar ou filtrar as demandas.
 - Alternar entre Lista, Semana e Calendário.
+- Alternar entre modos claro e escuro, com preferência salva neste navegador.
 - Recolher painéis e configurar densidade e exibição de concluídas.
 - Consultar calendário mensal com tarefas de todos os espaços e cores por espaço.
 - Consultar tarefas de um dia e indicar pendências atrasadas.
 - Manter tarefas concluídas no histórico do calendário.
+- Consultar o tempo de hoje pela localização aproximada, com permissão do navegador, ou por cidade escolhida manualmente: temperatura, mínima, máxima e chance de chuva.
 - Adaptar a navegação ao celular e ao desktop.
 
 ## Diretrizes de experiência
 
 - Linguagem genérica, sem exigir conhecimentos de desenvolvimento de software.
 - Cadastro rápido de tarefas, sem exigir projetos ou configurações prévias.
-- Visual minimalista com fundo preto, superfícies em grafite e cores para identificar espaços.
+- Visual minimalista com modos claro e escuro e cores para identificar espaços.
 - Manter as tarefas anteriores ao criar novas ou alterar filtros.
 - Comunicar falhas de gravação e preservar o texto digitado para nova tentativa.
 
