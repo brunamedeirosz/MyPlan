@@ -816,3 +816,247 @@ test("lista simplificada mantém cartões, detalhes e ações no desktop e celul
   await page.reload();
   await expect(page.getByRole("button", { name: "Preparar apresentação", exact: true })).toBeVisible();
 });
+
+
+test("tema claro e escuro persiste e cobre login, tarefas, calendário e configurações", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.getByRole("button", { name: "Ativar modo claro", exact: true }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.getByRole("button", { name: "Entrar", exact: true })).toBeVisible();
+  await signup(page, { openOptions: false });
+  await add(page, "Organizar a semana");
+  await add(page, "Estudar para a prova");
+  const row = page.locator(".task-row").first();
+  const colors = await row.evaluate((node) => {
+    // Composite translucent task rows over their actual ancestors.
+    const ancestors = [];
+    for (let current = node; current; current = current.parentElement) ancestors.unshift(current);
+    const background = ancestors.reduce((underneath, element) => {
+      const [r, g, b, alpha = 1] = getComputedStyle(element).backgroundColor.match(/[\d.]+/g).map(Number);
+      return [r, g, b].map((value, index) => value * alpha + underneath[index] * (1 - alpha));
+    }, [255, 255, 255]);
+    return {
+      background: `rgb(${background.map(Math.round).join(", ")})`,
+      title: getComputedStyle(node.querySelector(".task-open")).color,
+    };
+  });
+  const luminance = (color) => {
+    const [r, g, b] = color.match(/\d+/g).map(Number).map((channel) => {
+      const value = channel / 255;
+      return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  expect((luminance(colors.background) + 0.05) / (luminance(colors.title) + 0.05)).toBeGreaterThan(7);
+  await page.screenshot({ path: testInfo.outputPath("theme-light-desktop.png"), fullPage: true });
+  await page.getByRole("button", { name: "Configurações", exact: true }).click();
+  await expect(page.getByLabel("Aparência", { exact: true })).toHaveValue("light");
+  await page.getByLabel("Aparência", { exact: true }).selectOption("dark");
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.getByLabel("Aparência", { exact: true }).selectOption("light");
+  await page.getByRole("button", { name: "Pronto", exact: true }).click();
+  await page.getByRole("button", { name: "Organizar a semana", exact: true }).click();
+  await page.screenshot({ path: testInfo.outputPath("theme-light-editor.png"), fullPage: true });
+  await page.keyboard.press("Escape");
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("theme-light-mobile.png"), fullPage: true });
+  await page.getByRole("button", { name: "Ativar modo escuro", exact: true }).click();
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.getByRole("button", { name: "Organizar a semana", exact: true })).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath("theme-dark-mobile.png"), fullPage: true });
+});
+
+
+async function weatherOptions(page) {
+  const options = page.locator(".weather-settings");
+  if (await options.getAttribute("open") === null) await options.locator("summary").click();
+}
+
+test("tempo fica aberto no canto, persiste e funciona nos dois temas sem enviar credenciais", async ({ page }, testInfo) => {
+  let forecastCalls = 0;
+  let searchCalls = 0;
+  let fail = false;
+  await page.route("https://geocoding-api.open-meteo.com/**", async (route) => {
+    searchCalls++;
+    expect(route.request().headers().authorization).toBeUndefined();
+    await route.fulfill({ json: { results: [{ name: "Brasília", admin1: "Distrito Federal", country: "Brasil", latitude: -15.78, longitude: -47.93 }] } });
+  });
+  await page.route("https://api.open-meteo.com/**", async (route) => {
+    forecastCalls++;
+    expect(route.request().headers().authorization).toBeUndefined();
+    expect(new URL(route.request().url()).searchParams.get("forecast_days")).toBe("1");
+    if (fail) { await route.fulfill({ status: 503, json: { error: true } }); return; }
+    await route.fulfill({ json: {
+      current: { temperature_2m: 26.4, weather_code: 2, is_day: 1 },
+      daily: { temperature_2m_min: [18], temperature_2m_max: [29], precipitation_probability_max: [70] },
+    } });
+  });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await signup(page, { openOptions: false });
+  const weather = page.getByRole("region", { name: "Previsão do tempo", exact: true });
+  await expect(weather).toBeVisible();
+  expect(searchCalls).toBe(0);
+  expect(forecastCalls).toBe(0);
+  await weatherOptions(page);
+  await page.getByLabel("Buscar cidade", { exact: true }).fill("Brasília");
+  await page.getByRole("button", { name: "Buscar", exact: true }).click();
+  await page.getByRole("button", { name: "Brasília, Distrito Federal, Brasil", exact: true }).click();
+  await expect(page.locator(".weather-now")).toContainText("26°");
+  await add(page, "Planejar minha caminhada");
+  await expect(weather).toBeVisible();
+  await expect(weather).toContainText("Mínima18°");
+  await expect(weather).toContainText("Máxima29°");
+  await expect(weather).toContainText("Chuva70%");
+  await expect(page.getByLabel("Trocar cidade", { exact: true })).not.toBeVisible();
+  const main = await page.locator(".task-content").boundingBox();
+  const card = await weather.boundingBox();
+  expect(card.x).toBeGreaterThanOrEqual(main.x + main.width);
+  await page.screenshot({ path: testInfo.outputPath("weather-card-dark-desktop.png"), fullPage: true });
+  await page.getByRole("button", { name: "Ativar modo claro", exact: true }).click();
+  await page.screenshot({ path: testInfo.outputPath("weather-card-light-desktop.png"), fullPage: true });
+  await page.setViewportSize({ width: 360, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  const mobileMain = await page.locator(".task-content").boundingBox();
+  expect((await weather.boundingBox()).y).toBeGreaterThanOrEqual(mobileMain.y + mobileMain.height);
+  expect((await weather.boundingBox()).height).toBeLessThanOrEqual(80);
+  await weatherOptions(page);
+  await expect(page.locator(".weather-mobile-details .weather-stats")).toBeVisible();
+  await page.keyboard.press("Escape");
+  await page.screenshot({ path: testInfo.outputPath("weather-card-light-mobile.png"), fullPage: true });
+  await page.reload();
+  await expect(page.locator(".weather-now")).toContainText("26°");
+  expect(searchCalls).toBe(1);
+  await weatherOptions(page);
+  fail = true;
+  await page.getByRole("button", { name: "Atualizar tempo", exact: true }).click();
+  await expect(weather).toContainText("Não foi possível carregar o tempo");
+  await page.getByRole("button", { name: "Remover cidade", exact: true }).click();
+  await expect(page.locator(".weather-now")).toHaveCount(0);
+  await add(page, "Minhas tarefas continuam funcionando");
+  await expect(weather).toBeVisible();
+});
+
+test("busca de cidade comunica resultado vazio e indisponibilidade sem atrapalhar tarefas", async ({ page }) => {
+  let fail = false;
+  await page.route("https://geocoding-api.open-meteo.com/**", (route) => route.fulfill(
+    fail ? { status: 503, json: { error: true } } : { json: { results: [] } },
+  ));
+  await signup(page, { openOptions: false });
+  await weatherOptions(page);
+  await page.getByLabel("Buscar cidade", { exact: true }).fill("Cidade desconhecida");
+  await page.getByRole("button", { name: "Buscar", exact: true }).click();
+  await expect(page.locator(".weather-message")).toContainText("Cidade não encontrada");
+  fail = true;
+  await page.getByRole("button", { name: "Buscar", exact: true }).click();
+  await expect(page.locator(".weather-message")).toContainText("Não foi possível buscar");
+  await page.keyboard.press("Escape");
+  await expect(page.getByLabel("Buscar cidade", { exact: true })).not.toBeVisible();
+  await expect(page.getByRole("region", { name: "Previsão do tempo" })).toBeVisible();
+  await add(page, "Organizar meus compromissos");
+});
+
+test("localização permitida exibe o tempo automaticamente sem salvar coordenadas do dispositivo", async ({ page, context }) => {
+  await context.grantPermissions(["geolocation"]);
+  await context.setGeolocation({ latitude: -23.55052, longitude: -46.633308 });
+  let requests = 0;
+  await page.route("https://api.open-meteo.com/**", async (route) => {
+    requests++;
+    const url = new URL(route.request().url());
+    expect(url.searchParams.get("latitude")).toBe("-23.55");
+    expect(url.searchParams.get("longitude")).toBe("-46.63");
+    expect(route.request().headers().authorization).toBeUndefined();
+    await route.fulfill({ json: {
+      current: { temperature_2m: 24, weather_code: 0, is_day: 1 },
+      daily: { temperature_2m_min: [17], temperature_2m_max: [27], precipitation_probability_max: [15] },
+    } });
+  });
+  const username = await signup(page, { openOptions: false });
+  await expect(page.locator(".weather-now")).toContainText("24°");
+  await expect(page.locator(".weather-current > .weather-stats")).toBeVisible();
+  expect(requests).toBeGreaterThan(0);
+  expect(await page.evaluate((name) => localStorage.getItem(`myplan:${name}:weather-city`), username)).toBeNull();
+  await page.reload();
+  await expect(page.locator(".weather-now")).toContainText("24°");
+  await expect(page.locator(".weather-card > .weather-place")).toHaveText("Sua localização atual");
+  await weatherOptions(page);
+  await page.getByRole("button", { name: "Desativar tempo", exact: true }).click();
+  await expect(page.locator(".weather-now")).toHaveCount(0);
+  const calls = requests;
+  await page.reload();
+  await add(page, "Organizar o dia sem previsão");
+  expect(requests).toBe(calls);
+  await weatherOptions(page);
+  await page.getByRole("button", { name: "Usar minha localização", exact: true }).click();
+  await expect(page.locator(".weather-now")).toContainText("24°");
+});
+
+test("localização negada permite cidade manual e não consulta o tempo sem uma região", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "geolocation", { configurable: true, value: {
+      getCurrentPosition: (_success, failure) => queueMicrotask(() => failure({ code: 1 })),
+    } });
+  });
+  let forecasts = 0;
+  await page.route("https://api.open-meteo.com/**", async (route) => {
+    forecasts++;
+    await route.fulfill({ json: { current: { temperature_2m: 28, weather_code: 3, is_day: 1 }, daily: {} } });
+  });
+  await page.route("https://geocoding-api.open-meteo.com/**", (route) => route.fulfill({ json: {
+    results: [{ name: "Recife", admin1: "Pernambuco", country: "Brasil", latitude: -8.05, longitude: -34.88 }],
+  } }));
+  await signup(page, { openOptions: false });
+  await weatherOptions(page);
+  await expect(page.locator(".weather-message")).toContainText("Localização não autorizada");
+  expect(forecasts).toBe(0);
+  await page.getByLabel("Buscar cidade", { exact: true }).fill("Recife");
+  await page.getByRole("button", { name: "Buscar", exact: true }).click();
+  await page.getByRole("button", { name: "Recife, Pernambuco, Brasil", exact: true }).click();
+  await expect(page.locator(".weather-now")).toContainText("28°");
+  await page.reload();
+  await expect(page.locator(".weather-now")).toContainText("28°");
+  await expect(page.locator(".weather-card > .weather-place")).toHaveText("Recife, Pernambuco, Brasil");
+  await expect(page.locator(".weather-message")).toHaveCount(0);
+});
+
+
+test("menu mobile organiza espaços em coluna, contém foco e fecha ao escolher um espaço", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await signup(page, { openOptions: false });
+  await add(page, "Organizar minhas tarefas");
+  const opener = page.getByRole("button", { name: "Abrir menu", exact: true });
+  await opener.click();
+  const menu = page.getByRole("dialog", { name: "Menu do planner", exact: true });
+  await expect(menu).toBeVisible();
+  expect(await page.locator(".task-content").evaluate((node) => node.inert)).toBe(true);
+  const spaces = menu.getByRole("navigation", { name: "Seus espaços" });
+  const personal = await spaces.getByRole("button", { name: /^Pessoal/ }).boundingBox();
+  const work = await spaces.getByRole("button", { name: /^Trabalho/ }).boundingBox();
+  expect(work.x).toBe(personal.x);
+  expect(work.y).toBeGreaterThanOrEqual(personal.y + personal.height);
+  expect(await menu.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
+  await expect(page.getByRole("button", { name: "Fechar menu", exact: true })).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(menu.getByRole("button", { name: "Sair", exact: true })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Fechar menu", exact: true })).toBeFocused();
+  await page.screenshot({ path: testInfo.outputPath("mobile-menu-dark.png"), fullPage: true });
+  await spaces.getByRole("button", { name: /^Trabalho/ }).click();
+  await expect(menu).not.toBeVisible();
+  expect(await page.locator(".task-content").evaluate((node) => node.inert)).toBe(false);
+  await expect(opener).toBeFocused();
+  await opener.click();
+  await page.keyboard.press("Escape");
+  await expect(menu).not.toBeVisible();
+  await page.getByRole("button", { name: "Ativar modo claro", exact: true }).click();
+  await opener.click();
+  await page.screenshot({ path: testInfo.outputPath("mobile-menu-light.png"), fullPage: true });
+  await page.getByRole("button", { name: "Gerenciar espaços", exact: true }).click();
+  await expect(menu).not.toBeVisible();
+  await expect(page.getByLabel("Novo espaço", { exact: true })).toBeVisible();
+});
