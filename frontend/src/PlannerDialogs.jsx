@@ -54,7 +54,7 @@ export function DeleteConfirmation({ item, onClose, onDelete, error }) {
   );
 }
 
-export function PlannerSettings({ username, preferences, onChange, onClose }) {
+export function PlannerSettings({ username, theme, onThemeChange, preferences, onChange, onClose }) {
   const ref = useRef(null);
   useEffect(() => {
     const node = ref.current;
@@ -94,6 +94,14 @@ export function PlannerSettings({ username, preferences, onChange, onClose }) {
       <p className="field-help">
         Estas preferências são salvas neste navegador.
       </p>
+      <label className="settings-toggle">
+        <span>Aparência<small>Escolha como prefere ver seu planner.</small></span>
+        <select className="theme-select" aria-label="Aparência" value={theme}
+          onChange={(event) => onThemeChange(event.target.value)}>
+          <option value="dark">Modo escuro</option>
+          <option value="light">Modo claro</option>
+        </select>
+      </label>
       <label className="settings-toggle">
         <span>
           Lista compacta<small>Menos espaço entre as tarefas.</small>

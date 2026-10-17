@@ -12,6 +12,7 @@ export default function TaskCalendar({
   busy,
   loading,
   onCreate,
+  children,
 }) {
   const today = dateKey(new Date());
   const [month, setMonth] = useState(() => {
@@ -54,6 +55,7 @@ export default function TaskCalendar({
       className="calendar-panel"
       aria-label="Calendário das tarefas"
     >
+      {children}
       <div className="calendar-kicker">TODOS OS SEUS ESPAÇOS</div>
       <div className="calendar-title">
         <h2>Calendário</h2>

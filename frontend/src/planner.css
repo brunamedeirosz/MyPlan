@@ -22,12 +22,49 @@
   --muted: #a2a2a2;
   --accent: #e5e5e5;
   --danger: #f1a3b3;
+  --panel: #101010;
+  --control: #202020;
+  --border-strong: #383838;
+  --border-hover: #444444;
+  --subtle: #808080;
+  --secondary: #bcbcbc;
+  --overlay-rgb: 255 255 255;
+  --floating-rgb: 35 35 35;
+  --danger-rgb: 241 163 179;
+  --success: #9abbb1;
+  --important: #e8c57a;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
   -webkit-font-smoothing: antialiased;
   font-size: 14px;
 }
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f7f7f7;
+  --panel: #ffffff;
+  --surface: #ffffff;
+  --surface-raised: #f3f3f3;
+  --control: #ededed;
+  --border: #dedede;
+  --border-strong: #cccccc;
+  --border-hover: #b3b3b3;
+  --text: #202020;
+  --secondary: #494949;
+  --muted: #626262;
+  --subtle: #6b6b6b;
+  --accent: #242424;
+  --danger: #a82d49;
+  --danger-rgb: 168 45 73;
+  --success: #316b58;
+  --important: #8b6417;
+  --overlay-rgb: 0 0 0;
+  --floating-rgb: 255 255 255;
+  --space-saturation: 55%;
+  --space-lightness: 42%;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -91,7 +128,7 @@ textarea {
 }
 input::placeholder,
 textarea::placeholder {
-  color: #828282;
+  color: var(--subtle);
 }
 input {
   min-width: 0;
@@ -134,7 +171,7 @@ svg {
 .sidebar {
   display: flex;
   flex-direction: column;
-  background: #101010;
+  background: var(--panel);
   border-right: 1px solid var(--border);
   padding: 24px 16px;
   min-width: 0;
@@ -164,12 +201,12 @@ svg {
   width: 100%;
 }
 .nav-item.selected {
-  background: #99999914;
-  color: #c2c2c2;
-  border-color: #99999921;
+  background: rgb(var(--overlay-rgb) / 0.047);
+  color: var(--secondary);
+  border-color: rgb(var(--overlay-rgb) / 0.078);
 }
 .nav-item:hover {
-  background: #ffffff07;
+  background: rgb(var(--overlay-rgb) / 0.027);
   color: var(--text);
 }
 .nav-count {
@@ -211,11 +248,11 @@ svg {
   overflow-wrap: anywhere;
 }
 .space-nav.active {
-  background: #ffffff09;
+  background: rgb(var(--overlay-rgb) / 0.035);
   color: var(--text);
 }
 .space-nav:hover {
-  background: #ffffff06;
+  background: rgb(var(--overlay-rgb) / 0.024);
 }
 .space-marker {
   display: block;
@@ -258,8 +295,8 @@ svg {
   display: grid;
   place-items: center;
   border-radius: 9px;
-  background: #9999991c;
-  color: #b5b5b5;
+  background: rgb(var(--overlay-rgb) / 0.066);
+  color: var(--secondary);
   font-size: 12px;
   flex-shrink: 0;
 }
@@ -276,7 +313,7 @@ svg {
   color: var(--muted);
 }
 .icon-button:hover {
-  background: #ffffff0b;
+  background: rgb(var(--overlay-rgb) / 0.043);
   color: var(--text);
 }
 .task-content {
@@ -337,16 +374,16 @@ svg {
   gap: 12px;
   min-height: 56px;
   background: var(--surface);
-  border: 1px solid #393939;
+  border: 1px solid var(--border-strong);
   border-radius: 10px;
   padding: 10px 11px 10px 17px;
 }
 .add-task:focus-within {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px #99999910;
+  box-shadow: 0 0 0 3px rgb(var(--overlay-rgb) / 0.038);
 }
 .add-outline {
-  color: #acacac;
+  color: var(--secondary);
   display: flex;
 }
 .add-task input {
@@ -363,7 +400,7 @@ svg {
 }
 .add-task kbd {
   font-size: 13px;
-  color: #888888;
+  color: var(--subtle);
   font-family: inherit;
 }
 .add-button {
@@ -372,14 +409,14 @@ svg {
   width: 32px;
   height: 32px;
   flex-shrink: 0;
-  border: 1px solid #3b3b3b;
+  border: 1px solid var(--border-strong);
   border-radius: 7px;
-  background: #202020;
-  color: #f5f5f5;
+  background: var(--control);
+  color: var(--text);
 }
 .add-button:disabled {
-  background: #292929;
-  color: #898989;
+  background: var(--border);
+  color: var(--subtle);
   opacity: 1;
 }
 .task-space-picker {
@@ -403,7 +440,7 @@ svg {
 .task-space-picker > button {
   background: transparent;
   border: 0;
-  color: #bbbbbb;
+  color: var(--secondary);
   font-size: 11px;
   margin-left: auto;
   padding: 7px;
@@ -430,8 +467,8 @@ svg {
   font-weight: 550;
 }
 .list-toolbar b {
-  background: #232323;
-  color: #bdbdbd;
+  background: var(--control);
+  color: var(--secondary);
   font-size: 10px;
   padding: 2px 6px;
   border-radius: 4px;
@@ -459,36 +496,36 @@ svg {
 .task-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 76px;
-  padding: 18px;
-  border: 1px solid #292929;
-  background: #141414;
-  border-radius: 14px;
+  gap: 6px;
+  min-height: 48px;
+  padding: 2px 0;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  border-radius: 0;
   min-width: 0;
 }
 .task-row:hover {
-  background: #191919;
-  border-color: #444444;
+  background: rgb(var(--overlay-rgb) / 0.02);
 }
 .task-row:focus-within {
-  background: #99999906;
+  background: rgb(var(--overlay-rgb) / 0.014);
 }
 .task-check {
   width: 22px;
   height: 22px;
-  border: 1.5px solid #747474;
+  border: 1.5px solid var(--subtle);
   display: grid;
   place-items: center;
   border-radius: 7px;
   padding: 0;
   background: transparent;
-  color: #151515;
+  color: var(--surface);
   flex-shrink: 0;
 }
 .task-check:hover {
   border-color: var(--accent);
-  background: #9999990c;
+  background: rgb(var(--overlay-rgb) / 0.028);
 }
 .is-done .task-check {
   border-color: var(--accent);
@@ -498,7 +535,7 @@ svg {
   flex: 1;
   min-width: 0;
   overflow-wrap: anywhere;
-  color: #e5e5e5;
+  color: var(--text);
   font-size: 13px;
   line-height: 1.6;
 }
@@ -507,23 +544,23 @@ svg {
 }
 .is-done .task-title > .task-open {
   text-decoration: line-through;
-  color: #919191;
+  color: var(--muted);
 }
 .task-space-name {
   display: inline-flex;
   align-items: center;
   font-size: 10px;
-  color: #a2a2a2;
+  color: var(--muted);
   margin-right: 9px;
 }
 .task-due {
   display: inline-block;
-  color: #a9a9a9;
+  color: var(--muted);
   font-size: 10px;
   margin-top: 4px;
 }
 .task-due.late {
-  color: #ef9daf;
+  color: var(--danger);
 }
 .task-tools {
   display: flex;
@@ -540,14 +577,14 @@ svg {
   opacity: 1;
 }
 .star-tool:not(.is-important) {
-  color: #7b7b7b;
+  color: var(--subtle);
 }
 .is-important {
-  color: #e8c57a;
+  color: var(--important);
 }
 .delete-tool:hover {
   color: var(--danger);
-  background: #f1a3b310;
+  background: rgb(var(--danger-rgb) / 0.063);
 }
 .empty-list {
   padding: 36px 12px;
@@ -561,12 +598,12 @@ svg {
   width: 46px;
   height: 46px;
   border-radius: 13px;
-  color: #a5a5a5;
-  background: #9999990c;
+  color: var(--muted);
+  background: rgb(var(--overlay-rgb) / 0.028);
   margin: 0 auto 14px;
 }
 .empty-list h2 {
-  color: #cbcbcb;
+  color: var(--text);
   font-size: 15px;
   font-weight: 500;
   margin: 0 0 8px;
@@ -590,17 +627,17 @@ svg {
   font-size: 11px;
 }
 .completed-toggle span {
-  color: #787878;
+  color: var(--subtle);
 }
 .date-filter {
   display: flex;
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  background: #9999990d;
-  border: 1px solid #99999914;
+  background: rgb(var(--overlay-rgb) / 0.031);
+  border: 1px solid rgb(var(--overlay-rgb) / 0.047);
   border-radius: 7px;
-  color: #bdbdbd;
+  color: var(--secondary);
   padding: 10px 12px;
   font-size: 11px;
   margin-top: 19px;
@@ -608,7 +645,7 @@ svg {
 .date-filter button {
   border: 0;
   background: transparent;
-  color: #a9a9a9;
+  color: var(--muted);
   font-size: 10px;
 }
 .list-footer {
@@ -619,19 +656,19 @@ svg {
   gap: 7px;
   align-items: center;
   justify-content: center;
-  color: #868686;
+  color: var(--subtle);
   font-size: 10px;
 }
 .tiny-dot {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #8f8f8f;
+  background: var(--muted);
 }
 .error-message {
-  background: #ef8ca610;
-  border: 1px solid #ef8ca622;
-  color: #f4b9c8;
+  background: rgb(var(--danger-rgb) / 0.063);
+  border: 1px solid rgb(var(--danger-rgb) / 0.133);
+  color: var(--danger);
   border-radius: 9px;
   padding: 12px 15px;
   line-height: 1.7;
@@ -656,9 +693,9 @@ svg {
   gap: 20px;
   max-width: calc(100% - 24px);
   padding: 14px 18px;
-  border: 1px solid #424242;
+  border: 1px solid var(--border-hover);
   border-radius: 12px;
-  background: #222222;
+  background: var(--control);
   box-shadow: 0 8px 30px #0005;
   font-size: 12px;
   z-index: 70;
@@ -666,7 +703,7 @@ svg {
 .undo-toast button {
   background: transparent;
   border: 0;
-  color: #c6c6c6;
+  color: var(--secondary);
   font-size: 12px;
   white-space: nowrap;
 }
@@ -675,7 +712,7 @@ svg {
 }
 .calendar-panel {
   padding: 31px 23px;
-  background: #101010;
+  background: var(--panel);
   border-left: 1px solid var(--border);
   min-width: 0;
 }
@@ -698,10 +735,10 @@ svg {
   margin: 0;
 }
 .calendar-title > button {
-  background: #232323;
-  border: 1px solid #99999918;
+  background: var(--control);
+  border: 1px solid rgb(var(--overlay-rgb) / 0.056);
   border-radius: 6px;
-  color: #c5c5c5;
+  color: var(--secondary);
   font-size: 10px;
   padding: 7px 10px;
 }
@@ -710,7 +747,7 @@ svg {
   align-items: center;
   justify-content: space-between;
   font-size: 12px;
-  color: #c2c2c2;
+  color: var(--secondary);
   margin-bottom: 15px;
   text-transform: capitalize;
 }
@@ -721,14 +758,14 @@ svg {
 .calendar-month button {
   background: transparent;
   border: 0;
-  color: #aaaaaa;
+  color: var(--muted);
   border-radius: 6px;
   width: 30px;
   height: 32px;
   font-size: 23px;
 }
 .calendar-month button:hover {
-  background: #ffffff08;
+  background: rgb(var(--overlay-rgb) / 0.031);
 }
 .calendar-weekdays,
 .calendar-grid {
@@ -753,25 +790,25 @@ svg {
   background: transparent;
   border: 1px solid transparent;
   border-radius: 8px;
-  color: #c1c1c1;
+  color: var(--secondary);
   font-size: 11px;
 }
 .calendar-grid button:hover {
-  background: #9999990d;
-  border-color: #99999920;
+  background: rgb(var(--overlay-rgb) / 0.031);
+  border-color: rgb(var(--overlay-rgb) / 0.075);
 }
 .calendar-grid button.active-day {
-  background: #202020;
-  color: #f5f5f5;
+  background: var(--control);
+  color: var(--text);
   font-weight: 600;
 }
 .calendar-grid button.outside-month {
-  color: #676767;
+  color: var(--subtle);
 }
 .calendar-grid button.today:not(.active-day) {
-  border-color: #8a8a8a70;
-  color: #bfbfbf;
-  background: #9999990a;
+  border-color: rgb(var(--overlay-rgb) / 0.238);
+  color: var(--secondary);
+  background: rgb(var(--overlay-rgb) / 0.024);
 }
 .calendar-day-markers {
   display: flex;
@@ -795,7 +832,7 @@ svg {
   gap: 8px 12px;
   font-size: 9px;
   line-height: 1.8;
-  color: #a5a5a5;
+  color: var(--muted);
   margin: 17px 0 11px;
 }
 .calendar-space-legend > span {
@@ -818,13 +855,13 @@ svg {
   gap: 6px;
   font-size: 9px;
   line-height: 1.7;
-  color: #939393;
+  color: var(--muted);
   margin: 0 0 23px;
 }
 .calendar-history-hint i {
   width: 6px;
   height: 6px;
-  border: 1px solid #939393;
+  border: 1px solid var(--muted);
   border-radius: 50%;
 }
 .day-agenda {
@@ -840,11 +877,11 @@ svg {
   margin: 0;
   font-size: 13px;
   font-weight: 500;
-  color: #d5d5d5;
+  color: var(--text);
 }
 .agenda-heading > span {
-  background: #262626;
-  color: #b4b4b4;
+  background: var(--control);
+  color: var(--secondary);
   padding: 3px 6px;
   border-radius: 5px;
   font-size: 10px;
@@ -859,7 +896,7 @@ svg {
   align-items: flex-start;
   gap: 8px;
   padding: 11px 0;
-  border-bottom: 1px solid #222222;
+  border-bottom: 1px solid var(--control);
 }
 .day-agenda li > div {
   min-width: 0;
@@ -867,7 +904,7 @@ svg {
 .day-agenda li > div > span {
   font-size: 12px;
   line-height: 1.6;
-  color: #c4c4c4;
+  color: var(--secondary);
   overflow-wrap: anywhere;
 }
 .agenda-check {
@@ -876,7 +913,7 @@ svg {
   line-height: 1;
   border: 0;
   background: transparent;
-  color: #adadad;
+  color: var(--secondary);
   font-size: 20px;
   padding: 0;
 }
@@ -886,11 +923,11 @@ svg {
   align-items: center;
   gap: 5px;
   font-size: 10px;
-  color: #9f9f9f;
+  color: var(--muted);
   margin-top: 4px;
 }
 .agenda-empty {
-  color: #9e9e9e;
+  color: var(--muted);
   font-size: 11px;
   line-height: 1.8;
   margin: 18px 0;
@@ -901,7 +938,7 @@ svg {
   width: 100%;
   text-align: left;
   padding: 12px 0;
-  color: #b8b8b8;
+  color: var(--secondary);
   font-size: 11px;
   background: transparent;
   border: 0;
@@ -912,10 +949,10 @@ svg {
   gap: 7px;
   width: 100%;
   padding: 12px 9px;
-  border: 1px solid #ef9daf15;
+  border: 1px solid rgb(var(--danger-rgb) / 0.082);
   border-radius: 7px;
-  background: #ef9daf09;
-  color: #ecadbd;
+  background: rgb(var(--danger-rgb) / 0.035);
+  color: var(--danger);
   font-size: 11px;
   margin-top: 16px;
 }
@@ -926,28 +963,28 @@ svg {
   height: 4px;
   width: 4px;
   border-radius: 50%;
-  background: #ecadbd;
+  background: var(--danger);
 }
 .calendar-note {
   font-size: 9px;
-  color: #939393;
+  color: var(--muted);
   line-height: 1.8;
   margin: 20px 0 0;
 }
 .agenda-completed > div > span {
   text-decoration: line-through;
-  color: #8a8a8a !important;
+  color: var(--subtle) !important;
 }
 .agenda-completed .agenda-check {
   font-size: 14px;
-  color: #9a9a9a;
+  color: var(--muted);
 }
 .agenda-completed-label {
   font-size: 8px;
   padding: 2px 4px;
   border-radius: 4px;
-  background: #242424;
-  color: #ababab;
+  background: var(--control);
+  color: var(--secondary);
 }
 .mobile-view-switch {
   display: none;
@@ -955,8 +992,8 @@ svg {
 /* Dialogs retain native focus trapping and Escape behavior. */
 dialog {
   color: var(--text);
-  background: #171717;
-  border: 1px solid #353535;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
   border-radius: 16px;
   box-shadow: 0 24px 100px #0009;
   max-height: 88dvh;
@@ -989,7 +1026,7 @@ dialog::backdrop {
 .overline {
   font-size: 9px;
   letter-spacing: 1.5px;
-  color: #a2a2a2;
+  color: var(--muted);
 }
 .spaces-explanation {
   font-size: 12px;
@@ -1019,12 +1056,12 @@ dialog::backdrop {
 .spaces-edit-list button {
   background: transparent;
   border: 0;
-  color: #b8b8b8;
+  color: var(--secondary);
   font-size: 10px;
   padding: 7px;
 }
 .spaces-edit-list .remove-space {
-  color: #e2a3b6;
+  color: var(--danger);
 }
 .space-name-form {
   margin-top: 24px;
@@ -1032,7 +1069,7 @@ dialog::backdrop {
 .space-name-form label {
   display: block;
   font-size: 11px;
-  color: #b9b9b9;
+  color: var(--secondary);
   margin-bottom: 9px;
 }
 .space-name-form > div {
@@ -1049,16 +1086,16 @@ dialog::backdrop {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: #202020;
-  color: #f5f5f5;
-  border: 1px solid #3b3b3b;
+  background: var(--control);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
   padding: 12px 16px;
   font-size: 12px;
   font-weight: 550;
 }
 .primary-button:hover {
-  background: #303030;
+  background: var(--border-strong);
 }
 .space-name-form .primary-button {
   white-space: nowrap;
@@ -1070,16 +1107,16 @@ dialog::backdrop {
   display: block;
   background: transparent;
   border: 0;
-  color: #b0b0b0;
+  color: var(--secondary);
   font-size: 11px;
   margin: 20px auto 0;
   padding: 6px;
 }
 .space-delete-confirm {
-  background: #ef9daf09;
+  background: rgb(var(--danger-rgb) / 0.035);
   padding: 17px;
   border-radius: 9px;
-  border: 1px solid #ef9daf18;
+  border: 1px solid rgb(var(--danger-rgb) / 0.094);
   margin-top: 20px;
 }
 .space-delete-confirm h3 {
@@ -1089,7 +1126,7 @@ dialog::backdrop {
 }
 .space-delete-confirm p {
   font-size: 12px;
-  color: #d0adba;
+  color: var(--danger);
   line-height: 1.8;
 }
 .space-delete-confirm > div {
@@ -1100,12 +1137,12 @@ dialog::backdrop {
 .space-delete-confirm button {
   background: transparent;
   border: 0;
-  color: #d0b2c5;
+  color: var(--danger);
   font-size: 12px;
   padding: 9px 12px;
 }
 .space-delete-confirm .danger-button {
-  background: #a96078;
+  background: var(--danger);
   color: white;
   border-radius: 7px;
 }
@@ -1172,7 +1209,7 @@ dialog::backdrop {
 .login-card label {
   display: block;
   font-size: 12px;
-  color: #c0c0c0;
+  color: var(--secondary);
   margin: 16px 0;
 }
 .login-card label span {
@@ -1448,8 +1485,8 @@ dialog::backdrop {
     display: flex;
     gap: 4px;
     padding: 4px;
-    background: #232323ed;
-    border: 1px solid #444444;
+    background: rgb(var(--floating-rgb) / 0.929);
+    border: 1px solid var(--border-hover);
     border-radius: 12px;
     z-index: 40;
     backdrop-filter: blur(15px);
@@ -1462,12 +1499,12 @@ dialog::backdrop {
     border: 0;
     padding: 9px 28px;
     border-radius: 8px;
-    color: #a7a7a7;
+    color: var(--muted);
     font-size: 12px;
   }
   .mobile-view-switch button[aria-pressed="true"] {
-    color: #e1e1e1;
-    background: #7a7a7a2a;
+    color: var(--text);
+    background: rgb(var(--overlay-rgb) / 0.079);
   }
   .undo-toast {
     bottom: calc(83px + env(safe-area-inset-bottom));
@@ -1525,7 +1562,7 @@ dialog::backdrop {
   border-bottom: 1px solid var(--border);
   height: 46px;
   padding: 0 22px;
-  background: #101010;
+  background: var(--panel);
   color: var(--muted);
   font-size: 11px;
 }
@@ -1562,31 +1599,44 @@ dialog::backdrop {
 }
 .view-selector {
   display: flex;
-  gap: 4px;
-  background: #111111;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 3px;
-}
-.view-selector button {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  min-height: 32px;
+  gap: 22px;
   background: transparent;
   border: 0;
-  border-radius: 5px;
-  padding: 7px 11px;
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+}
+.view-selector button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 8px 1px 11px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 450;
+}
+.view-selector button::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: transparent;
 }
 .view-selector button[aria-pressed="true"] {
-  color: #d5d5d5;
-  background: #99999919;
+  color: var(--text);
+  font-weight: 550;
 }
-.view-selector button:hover {
-  background: #ffffff06;
-}
+.view-selector button[aria-pressed="true"]::after { background: var(--text); }
+.view-selector button:hover { color: var(--text); }
+.view-selector button svg { width: 15px; height: 15px; opacity: 0.8; }
 .workspace-total {
   font-size: 10px;
   color: var(--muted);
@@ -1604,7 +1654,7 @@ dialog::backdrop {
   min-height: 32px;
   padding: 4px 2px;
   max-width: 120px;
-  color: #b6b6b6;
+  color: var(--secondary);
 }
 .filter-controls select:hover {
   background: var(--surface);
@@ -1621,18 +1671,18 @@ dialog::backdrop {
 .task-group-heading h2 {
   font-size: 11px;
   font-weight: 500;
-  color: #a9a9a9;
+  color: var(--muted);
   margin: 0;
 }
 .task-group-heading > span {
   font-size: 10px;
-  color: #909090;
-  background: #1e1e1e;
+  color: var(--muted);
+  background: var(--surface-raised);
   padding: 2px 5px;
   border-radius: 4px;
 }
 .group-overdue .task-group-heading h2 {
-  color: #e9a1b4;
+  color: var(--danger);
 }
 .task-metadata {
   display: flex;
@@ -1657,25 +1707,25 @@ dialog::backdrop {
   align-items: center;
   gap: 4px;
   font-size: 9px;
-  color: #acacac;
+  color: var(--secondary);
 }
 .priority-pill i {
   height: 5px;
   width: 5px;
   border-radius: 2px;
-  background: #8f8f8f;
+  background: var(--muted);
 }
 .priority-alta {
-  color: #ef9daf;
+  color: var(--danger);
 }
 .priority-alta i {
-  background: #ef9daf;
+  background: var(--danger);
 }
 .priority-baixa {
-  color: #9abbb1;
+  color: var(--success);
 }
 .priority-baixa i {
-  background: #9abbb1;
+  background: var(--success);
 }
 .subtask-progress {
   display: flex;
@@ -1685,19 +1735,19 @@ dialog::backdrop {
   border: 0;
   background: transparent;
   border-radius: 3px;
-  color: #a9a9a9;
+  color: var(--muted);
   font-size: 9px;
 }
 .recurring-mark,
 .description-mark {
-  color: #9e9e9e;
+  color: var(--muted);
   font-size: 12px;
   display: flex;
 }
 .compact-tasks .task-row {
-  min-height: 58px;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  min-height: 44px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 .feedback-toast {
   position: fixed;
@@ -1707,11 +1757,11 @@ dialog::backdrop {
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  background: #1e1e1e;
-  border: 1px solid #424242;
+  background: var(--surface-raised);
+  border: 1px solid var(--border-hover);
   border-radius: 10px;
   box-shadow: 0 5px 25px #0005;
-  color: #cfcfcf;
+  color: var(--text);
   font-size: 11px;
   z-index: 65;
 }
@@ -1721,7 +1771,7 @@ dialog::backdrop {
 .loading-tasks > span {
   display: block;
   height: 58px;
-  background: linear-gradient(100deg, #141414, #1c1c1c, #141414);
+  background: linear-gradient(100deg, var(--surface), var(--surface-raised), var(--surface));
   border-radius: 8px;
   margin: 9px 0;
 }
@@ -1735,21 +1785,21 @@ dialog::backdrop {
   justify-content: center;
   gap: 6px;
   min-height: 34px;
-  background: #ffffff04;
-  color: #bfbfbf;
-  border: 1px solid #353535;
+  background: rgb(var(--overlay-rgb) / 0.016);
+  color: var(--secondary);
+  border: 1px solid var(--border-strong);
   border-radius: 7px;
   font-size: 11px;
   padding: 8px 12px;
 }
 .secondary-button:hover {
-  background: #9999990c;
+  background: rgb(var(--overlay-rgb) / 0.028);
 }
 .danger-button {
   min-height: 36px;
-  background: #9d4e6a;
+  background: var(--danger);
   color: #fff;
-  border: 1px solid #b86a85;
+  border: 1px solid var(--danger);
   border-radius: 7px;
   padding: 9px 14px;
   font-size: 12px;
@@ -1777,7 +1827,7 @@ dialog::backdrop {
   flex-direction: column;
   gap: 8px;
   font-size: 11px;
-  color: #b4b4b4;
+  color: var(--secondary);
   margin-bottom: 17px;
 }
 .field-label input,
@@ -1797,7 +1847,7 @@ dialog::backdrop {
 .field-help {
   font-size: 11px;
   line-height: 1.8;
-  color: #a0a0a0;
+  color: var(--muted);
   margin: 0 0 20px;
 }
 .editor-checklist {
@@ -1826,7 +1876,7 @@ dialog::backdrop {
   gap: 9px;
   min-height: 37px;
   font-size: 12px;
-  color: #bcbcbc;
+  color: var(--secondary);
 }
 .checklist-row input {
   accent-color: var(--accent);
@@ -1840,7 +1890,7 @@ dialog::backdrop {
 }
 .subtask-done {
   text-decoration: line-through;
-  color: #919191;
+  color: var(--muted);
 }
 .add-subtask {
   display: flex;
@@ -1873,7 +1923,7 @@ dialog::backdrop {
 .confirm-dialog p {
   font-size: 12px;
   line-height: 1.8;
-  color: #b5b5b5;
+  color: var(--secondary);
   overflow-wrap: anywhere;
 }
 .settings-dialog {
@@ -1949,7 +1999,7 @@ dialog::backdrop {
 }
 .board-heading > div > span {
   font-size: 11px;
-  color: #b0b0b0;
+  color: var(--secondary);
   text-transform: capitalize;
   padding: 0 5px;
 }
@@ -1971,7 +2021,7 @@ dialog::backdrop {
   overflow: hidden;
 }
 .board-day {
-  background: #121212;
+  background: var(--panel);
   min-height: 105px;
   padding: 7px;
   min-width: 0;
@@ -1980,13 +2030,13 @@ dialog::backdrop {
   min-height: 300px;
 }
 .board-day.is-today {
-  background: #9999990c;
+  background: rgb(var(--overlay-rgb) / 0.028);
 }
 .board-day.is-selected {
-  box-shadow: inset 0 0 0 1px #99999988;
+  box-shadow: inset 0 0 0 1px rgb(var(--overlay-rgb) / 0.320);
 }
 .board-day.is-outside {
-  background: #0e0e0e;
+  background: var(--bg);
 }
 .board-day > header {
   display: flex;
@@ -1999,11 +2049,11 @@ dialog::backdrop {
   background: transparent;
   border: 0;
   padding: 4px;
-  color: #aeaeae;
+  color: var(--secondary);
   font-size: 11px;
 }
 .is-today .board-date {
-  color: #d6d6d6;
+  color: var(--text);
 }
 .board-add {
   min-width: 20px;
@@ -2018,8 +2068,8 @@ dialog::backdrop {
   align-items: flex-start;
   gap: 2px;
   border-radius: 5px;
-  background: #9999990a;
-  border: 1px solid #9999990b;
+  background: rgb(var(--overlay-rgb) / 0.024);
+  border: 1px solid rgb(var(--overlay-rgb) / 0.026);
   margin-bottom: 6px;
   padding: 5px 2px;
 }
@@ -2029,7 +2079,7 @@ dialog::backdrop {
   padding: 0 1px;
   line-height: 1.6;
   font-size: 13px;
-  color: #adadad;
+  color: var(--secondary);
   min-width: 14px;
 }
 .board-task-title {
@@ -2040,7 +2090,7 @@ dialog::backdrop {
   padding: 1px 2px;
   font-size: 10px;
   line-height: 1.6;
-  color: #c9c9c9;
+  color: var(--text);
   text-align: left;
   overflow-wrap: anywhere;
 }
@@ -2053,7 +2103,7 @@ dialog::backdrop {
 }
 .board-task-done .board-task-title {
   text-decoration: line-through;
-  color: #838383;
+  color: var(--subtle);
 }
 .unscheduled-tasks {
   font-size: 11px;
@@ -2073,18 +2123,18 @@ dialog::backdrop {
   gap: 10px;
   background: transparent;
   border: 0;
-  color: #b3b3b3;
+  color: var(--secondary);
   width: 100%;
   text-align: left;
   font-size: 11px;
   padding: 10px 0;
 }
 .agenda-create-task {
-  border: 1px dashed #484848;
+  border: 1px dashed var(--border-hover);
   width: 100%;
   border-radius: 6px;
-  background: #99999906;
-  color: #b9b9b9;
+  background: rgb(var(--overlay-rgb) / 0.014);
+  color: var(--secondary);
   padding: 10px;
   font-size: 10px;
   margin: 12px 0 2px;
@@ -2097,7 +2147,7 @@ dialog::backdrop {
 .upcoming-deadlines h3 {
   font-size: 11px;
   font-weight: 500;
-  color: #bcbcbc;
+  color: var(--secondary);
   margin: 0 0 10px;
 }
 .upcoming-deadlines > button {
@@ -2108,7 +2158,7 @@ dialog::backdrop {
   width: 100%;
   border: 0;
   background: transparent;
-  color: #9f9f9f;
+  color: var(--muted);
   text-align: left;
   padding: 9px 0;
   font-size: 10px;
@@ -2120,7 +2170,7 @@ dialog::backdrop {
 }
 .upcoming-deadlines small {
   white-space: nowrap;
-  color: #909090;
+  color: var(--muted);
   font-size: 9px;
 }
 @media (min-width: 1600px) {
@@ -2372,7 +2422,7 @@ dialog::backdrop {
     content: "";
     position: absolute;
     inset: 11px;
-    border: 1.5px solid #818181;
+    border: 1.5px solid var(--subtle);
     border-radius: 6px;
   }
   .task-check:hover::before {
@@ -2398,7 +2448,7 @@ dialog::backdrop {
 /* Task list: readable cards and progressive disclosure for optional controls. */
 .task-list {
   display: grid;
-  gap: 10px;
+  gap: 0;
 }
 .task-open {
   display: block;
@@ -2409,31 +2459,31 @@ dialog::backdrop {
   background: transparent;
   color: var(--text);
   text-align: left;
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: 1.35;
   overflow-wrap: anywhere;
 }
-.task-title > .task-open { font-weight: 550; }
+.task-title > .task-open { font-weight: 450; }
 .task-description {
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12px;
   overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
+  display: none;
+  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
 }
-.task-metadata { margin-top: 9px; gap: 7px 12px; }
+.task-metadata { margin-top: 1px; gap: 2px 7px; line-height: 1.3; }
 .task-metadata .task-space-name,
 .task-metadata .task-due,
-.task-metadata .priority-pill { font-size: 11px; }
+.task-metadata .priority-pill { font-size: 10px; }
 .task-metadata .task-due { display: inline-flex; align-items: center; gap: 5px; }
-.task-group-heading { margin-bottom: 12px; }
-.task-group-heading h2 { font-size: 13px; color: #d4d4d4; }
+.task-group-heading { margin-bottom: 8px; }
+.task-group-heading h2 { font-size: 13px; color: var(--text); }
 .task-composer {
-  border: 1px solid #333333;
+  border: 1px solid var(--border-strong);
   border-radius: 14px;
-  background: #111111;
+  background: var(--panel);
 }
 .task-composer .add-task {
   margin: 0;
@@ -2441,16 +2491,16 @@ dialog::backdrop {
   background: transparent;
   box-shadow: none;
 }
-.task-composer:focus-within { border-color: #777777; }
+.task-composer:focus-within { border-color: var(--subtle); }
 .composer-options > summary,
 .list-filter-options > summary {
   cursor: pointer;
-  color: #b5b5b5;
+  color: var(--secondary);
   font-size: 12px;
   min-height: 40px;
   padding: 12px 18px;
 }
-.composer-options[open] > summary { border-bottom: 1px solid #262626; }
+.composer-options[open] > summary { border-bottom: 1px solid var(--control); }
 .composer-options .task-space-picker { margin: 0; padding: 14px 18px; }
 .list-filter-options { position: relative; flex-shrink: 0; }
 .list-filter-options > summary { padding: 10px 4px; }
@@ -2462,23 +2512,246 @@ dialog::backdrop {
   width: 240px;
   display: grid;
   padding: 12px;
-  border: 1px solid #383838;
+  border: 1px solid var(--border-strong);
   border-radius: 12px;
-  background: #191919;
+  background: var(--surface-raised);
   box-shadow: 0 12px 32px #00000080;
 }
 .list-filter-options .filter-controls select { max-width: none; font-size: 12px; }
 .task-tools { gap: 0; }
 @media (max-width: 700px) {
-  .task-row { padding: 14px 10px; gap: 8px; }
-  .task-open { font-size: 15px; }
-  .task-metadata { gap: 6px 9px; }
+  .task-row { min-height: 48px; padding: 2px 0; gap: 2px; }
+  .task-open { font-size: 13px; }
+  .task-metadata { gap: 3px 7px; }
   .task-metadata .task-space-name,
-  .task-metadata .task-due { font-size: 11px; }
-  .task-tools { flex-direction: column; }
-  .task-tools .icon-button { width: 32px; min-height: 32px; height: 32px; }
+  .task-metadata .task-due { font-size: 10px; }
+  .task-tools { flex-direction: row; }
+  .task-tools .icon-button { width: 26px; min-width: 26px; min-height: 44px; height: 44px; padding-inline: 3px; }
   .list-toolbar { flex-direction: row; align-items: center; }
   .search-box { min-width: 0; flex: 1; }
   .search-box input { width: 100%; min-width: 0; }
   .composer-options .task-space-picker { padding: 12px; }
+}
+
+.theme-toggle { margin-left: auto; }
+.brand-bar .brand-caption { margin-left: 0; }
+.theme-select { min-height: 42px; padding: 8px 12px; }
+:root[data-theme="light"] .primary-button,
+:root[data-theme="light"] .add-button:not(:disabled) {
+  background: #242424;
+  color: #ffffff;
+  border-color: #242424;
+}
+:root[data-theme="light"] .primary-button:hover,
+:root[data-theme="light"] .add-button:not(:disabled):hover { background: #404040; }
+
+.heading-context { display: flex; align-items: center; gap: 10px; }
+.weather-card { width: 100%; min-width: 0; padding: 0 0 16px; margin-bottom: 24px; border: 0; border-bottom: 1px solid var(--border); background: transparent; font-size: 12px; color: var(--secondary); }
+.weather-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.weather-heading h2 { margin: 0; font-size: 12px; font-weight: 500; color: var(--muted); }
+.weather-place { font-size: 10px; margin: 5px 0 10px; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.weather-now { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+.weather-now > svg { width: 22px; height: 22px; color: var(--secondary); }
+.weather-now > strong { font-size: 28px; font-weight: 500; letter-spacing: -1px; color: var(--text); white-space: nowrap; }
+.weather-now > strong small { font-size: 12px; letter-spacing: 0; color: var(--muted); }
+.weather-now > span { min-width: 0; font-size: 11px; line-height: 1.5; color: var(--muted); }
+.weather-stats { display: flex; flex-wrap: wrap; gap: 6px 12px; padding: 4px 0; }
+.weather-stats span { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; color: var(--muted); }
+.weather-stats strong { color: var(--secondary); font-size: 11px; font-weight: 500; }
+.weather-updated { font-size: 10px; margin: 10px 0; color: var(--muted); }
+.weather-source { margin: 0; font-size: 9px; color: var(--muted); text-underline-offset: 2px; }
+.weather-settings { margin-top: 4px; }
+.weather-settings > summary { cursor: pointer; min-height: 32px; padding: 9px 0 0; color: var(--muted); font-size: 10px; }
+.weather-settings > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+.weather-actions { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.weather-actions button { border: 0; background: transparent; color: var(--secondary); font-size: 11px; min-height: 36px; padding: 6px 0; }
+.weather-actions button:hover { text-decoration: underline; }
+.weather-search { border-top: 1px solid var(--border); padding-top: 14px; margin-top: 12px; }
+.weather-search label { display: block; margin-bottom: 8px; font-size: 12px; }
+.weather-search > div { display: flex; gap: 8px; }
+.weather-search input { padding: 10px; width: 100%; min-width: 0; font-size: 13px; }
+.weather-search button { padding: 8px; font-size: 11px; }
+.weather-privacy, .weather-credit { font-size: 10px; line-height: 1.6; margin: 8px 0 0; padding: 0; color: var(--muted); }
+.weather-credit a, .weather-source a { text-underline-offset: 2px; }
+.weather-results { list-style: none; padding: 0; margin: 10px 0; display: grid; gap: 4px; }
+.weather-results button { width: 100%; text-align: left; background: var(--surface-raised); border: 1px solid var(--border); padding: 10px; border-radius: 8px; font-size: 12px; line-height: 1.5; }
+.weather-results button:hover { border-color: var(--border-hover); }
+.weather-error, .weather-message, .weather-placeholder { font-size: 12px; line-height: 1.6; }
+.weather-error { color: var(--danger); }
+.weather-location-button { width: 100%; min-height: 40px; margin-top: 12px; font-size: 12px; }
+@media (max-width: 1150px) and (min-width: 701px) {
+  .calendar-panel > .weather-card { grid-column: 1 / -1; }
+}
+@media (max-width: 700px) {
+  .view-tasks .calendar-panel,
+  .view-tasks.calendar-collapsed .calendar-panel { display: block; padding: 0 20px 24px; }
+  .view-tasks .calendar-panel > :not(.weather-widget) { display: none; }
+  .weather-card { margin-bottom: 0; }
+  .view-calendar .weather-card { margin-bottom: 26px; }
+  .weather-now > span { flex-basis: auto; flex: 1; }
+  .weather-search input { font-size: 16px; }
+}
+
+/* Put existing tasks before creation and filtering controls. */
+.content-heading { margin: 6px 0 16px; }
+.content-heading h1 { font-size: 22px; letter-spacing: -0.6px; }
+.date-label { font-size: 10px; }
+
+.workspace-toolbar { margin-bottom: 16px; }
+.task-results { min-width: 0; }
+.task-results .task-group:first-child .task-group-heading { margin-top: 0; }
+.task-results .task-group:last-child { margin-bottom: 0; }
+.task-composer { margin-top: 18px; }
+.list-toolbar { margin-top: 14px; margin-bottom: 0; padding-bottom: 0; border-bottom: 0; }
+@media (max-width: 700px) {
+  .task-content { padding-top: 18px; }
+  .content-heading { margin: 6px 0 16px; align-items: center; gap: 12px; }
+  .content-heading h1 { font-size: 22px; }
+  .heading-context { max-width: none; }
+
+  .workspace-toolbar { margin: 0; }
+  .task-composer { margin-top: 16px; }
+  .list-toolbar { margin-top: 12px; }
+}
+
+.content-heading .date-label { margin-top: 5px; text-transform: none; }
+
+.weather-mobile-details, .weather-placeholder-short { display: none; }
+@media (max-width: 700px) {
+  .brand-bar { height: 54px; padding-inline: 20px; }
+  .brand-caption { display: none; }
+  .layout-controls { height: 36px; min-height: 36px; }
+  .task-content { padding: 16px 20px 18px; }
+  .content-heading { margin: 0 0 14px; }
+  .task-results[data-section="today"] .group-today > .task-group-heading { display: none; }
+  .task-composer { border-radius: 10px; margin-top: 12px; }
+  .task-composer .add-task { min-height: 48px; padding: 4px 10px; }
+  .task-composer .add-task input { font-size: 16px; }
+  .task-composer .add-button { width: 36px; height: 36px; }
+  .composer-options > summary { min-height: 32px; padding: 8px 12px; font-size: 11px; }
+  .list-toolbar { margin-top: 8px; }
+  .workspace-layout.with-calendar { min-height: calc(100dvh - 54px); }
+  .view-tasks .calendar-panel,
+  .view-tasks.calendar-collapsed .calendar-panel { padding: 0 20px 12px; background: transparent; }
+  .weather-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "current settings" "source settings";
+    column-gap: 10px;
+    row-gap: 0;
+    padding: 10px 0;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--border);
+  }
+  .weather-heading { grid-area: source; min-height: 12px; margin-left: 25px; }
+  .weather-heading h2, .weather-card > .weather-place { display: none; }
+  .weather-source { font-size: 8px; line-height: 1.3; }
+  .weather-current { grid-area: current; min-width: 0; align-self: center; }
+  .weather-current > .weather-stats { display: none; }
+  .weather-now { margin: 0; gap: 6px; flex-wrap: nowrap; }
+  .weather-now > svg { width: 18px; height: 18px; }
+  .weather-now > strong { font-size: 20px; letter-spacing: -0.5px; }
+  .weather-now > strong small { font-size: 10px; }
+  .weather-now > span { flex: 1; font-size: 10px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+  .weather-settings { grid-area: settings; align-self: center; margin: 0; }
+  .weather-settings > summary { font-size: 10px; min-height: 44px; padding: 14px 0 10px; }
+  .weather-settings[open] { grid-area: auto; grid-column: 1 / -1; }
+  .weather-settings[open] .weather-mobile-details { display: block; }
+  .weather-mobile-details .weather-place { margin: 0 0 8px; }
+  .weather-mobile-details .weather-stats { padding: 6px 0; }
+  .weather-placeholder-full { display: none; }
+  .weather-placeholder-short { display: inline; }
+  .weather-placeholder, .weather-error, .weather-current > p { margin: 0; font-size: 11px; line-height: 1.5; }
+  .view-calendar .weather-card { margin-bottom: 18px; }
+  .mobile-view-switch {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    width: 100%;
+    justify-content: space-around;
+    gap: 8px;
+    padding: 6px 16px calc(6px + env(safe-area-inset-bottom));
+    border: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    background: var(--panel);
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+  .mobile-view-switch button { flex: 1; padding: 8px; font-size: 11px; }
+}
+
+.mobile-sidebar-heading, .menu-backdrop { display: none; }
+@media (max-width: 700px) {
+  .layout-controls > span { display: none; }
+  .mobile-menu-toggle { width: auto; gap: 8px; padding: 6px; font-size: 12px; }
+  .mobile-menu-open > .menu-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    border: 0;
+    padding: 0;
+    background: #00000080;
+    cursor: default;
+  }
+  .mobile-menu-open > .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    width: min(330px, calc(100vw - 36px));
+    max-width: 100%;
+    height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    padding: calc(12px + env(safe-area-inset-top)) 16px calc(16px + env(safe-area-inset-bottom));
+    border: 0;
+    border-right: 1px solid var(--border);
+    background: var(--panel);
+    box-shadow: 8px 0 32px #00000030;
+  }
+  .mobile-sidebar-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .mobile-sidebar-heading h2 { font-size: 18px; font-weight: 550; margin: 0; }
+  .mobile-sidebar-heading button { min-width: 44px; min-height: 44px; }
+  .sidebar > nav { display: grid; grid-template-columns: 1fr; gap: 4px; overflow: visible; padding: 0; }
+  .sidebar .nav-item { min-height: 46px; padding: 11px 12px; font-size: 13px; }
+  .sidebar .spaces-section { margin-top: 20px; padding-top: 16px; margin-bottom: 20px; }
+  .sidebar .spaces-section-heading { padding-inline: 12px; margin-bottom: 8px; }
+  .sidebar .spaces-section-heading button { min-width: 40px; min-height: 40px; }
+  .sidebar .spaces-navigation { display: grid !important; grid-template-columns: minmax(0, 1fr); gap: 4px; overflow: visible; padding: 0; }
+  .sidebar .space-nav { width: 100%; white-space: normal; min-height: 44px; padding: 10px 12px; font-size: 13px; }
+  .sidebar .space-marker { width: 7px; height: 7px; }
+  .sidebar .nav-count { font-size: 11px; }
+  .sidebar .profile { margin-top: auto; padding-top: 16px; gap: 10px; }
+  .sidebar .profile strong { font-size: 12px; }
+  .sidebar .profile button { min-width: 40px; min-height: 44px; }
+}
+
+.task-list > .task-row:last-child { border-bottom: 0; }
+@media (max-width: 700px) {
+  .task-check::before { inset: 13px; border-radius: 4px; }
+  .task-tools .icon-button svg { width: 14px; height: 14px; }
+}
+
+/* Slim task composer; optional fields stay collapsed. */
+.task-composer { border-radius: 9px; background: transparent; }
+.task-composer .add-task { min-height: 40px; padding: 2px 9px; gap: 8px; }
+.task-composer .add-task input { padding-block: 3px; font-size: 13px; }
+.task-composer .add-outline svg { width: 15px; height: 15px; }
+.task-composer .add-button { width: 28px; height: 28px; border-radius: 6px; }
+.task-composer .add-button svg { width: 15px; height: 15px; }
+.task-composer .composer-options > summary { min-height: 24px; padding: 3px 10px 6px; font-size: 10px; }
+@media (max-width: 700px) {
+  .task-composer .add-task { min-height: 40px; padding: 0 8px; }
+  .task-composer .add-task input { font-size: 16px; }
+  .task-composer .add-button { width: 30px; height: 30px; position: relative; }
+  .task-composer .add-button::after { content: ""; position: absolute; inset: -5px; }
+  .task-composer .composer-options > summary { min-height: 24px; padding: 2px 9px 6px; }
 }

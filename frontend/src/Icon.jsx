@@ -69,6 +69,11 @@ export default function Icon({ name, size = 20, ...props }) {
         <path d="M9 4H4v16h5M14 8l4 4-4 4M9 12h11" />
       </>
     ),
+    cloud: <path d="M7 18a5 5 0 1 1 1-9.9A6 6 0 0 1 20 10a4 4 0 0 1-1 8Z" />,
+    rain: <><path d="M5 15a4 4 0 0 1 2-7.5A6 6 0 0 1 18.5 8 3.5 3.5 0 0 1 19 15H5ZM8 18l-1 3M13 18l-1 3M18 18l-1 3" /></>,
+    snow: <path d="M12 3v18M4 7l16 10M4 17 20 7M9 5l3 2 3-2M9 19l3-2 3 2" />,
+    storm: <><path d="M5 15a4 4 0 0 1 2-7.5A6 6 0 0 1 18.5 8 3.5 3.5 0 0 1 19 15" /><path d="m13 12-4 6h5l-3 5" /></>,
+    moon: <path d="M20.5 13A8.5 8.5 0 0 1 11 3.5 8.5 8.5 0 1 0 20.5 13Z" />,
     sun: (
       <>
         <circle cx="12" cy="12" r="4" />
