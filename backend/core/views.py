@@ -7,6 +7,8 @@ from rest_framework import generics, permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from .throttles import LoginThrottle, RegistrationThrottle
 
 from .access import accessible_workspaces, require_manager
 from .models import Comentario, EspacoPessoal, ItemPessoal, Nota, Projeto, Tarefa, Workspace
@@ -31,6 +33,15 @@ class RegistroUsuarioView(generics.CreateAPIView):
     serializer_class = RegistroUsuarioSerializer
     permission_classes = [permissions.AllowAny]
     authentication_classes = []
+    throttle_classes = [RegistrationThrottle]
+
+
+class LoginView(TokenObtainPairView):
+    throttle_classes = [LoginThrottle]
+
+
+class RefreshView(TokenRefreshView):
+    throttle_classes = [LoginThrottle]
 
 
 class WorkspaceViewSet(viewsets.ModelViewSet):

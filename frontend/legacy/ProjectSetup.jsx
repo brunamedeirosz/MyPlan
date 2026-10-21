@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api } from './api';
+import { api } from '../src/api';
 
 export default function ProjectSetup({ workspaces, onReady, onCancel }) {
   const managed = workspaces.filter(workspace => workspace.pode_gerenciar);

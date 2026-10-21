@@ -1,172 +1,149 @@
 # MyPlan
 
-Seu dia, organizado.
+**Seu dia, organizado.** Planner pessoal para reunir tarefas, checklists e prazos em um só lugar, com React e uma API Django REST Framework.
 
-**MyPlan** é um planner pessoal para reunir tarefas, checklists e prazos em um só lugar.
-Separe as demandas da vida pessoal, do trabalho e dos estudos e acompanhe tudo pelo
-calendário. A interface é minimalista, com modos claro e escuro, destaques em tons de cinza e fonte Inter hospedada no próprio projeto. Adapta-se ao celular e ao desktop.
+[![CI](https://github.com/brunamedeirosz/MyPlan/actions/workflows/ci.yml/badge.svg)](https://github.com/brunamedeirosz/MyPlan/actions/workflows/ci.yml)
+[![Licença MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-lightgrey)](LICENSE)
 
-## Funcionalidades
+![MyPlan no desktop, com tarefas, espaços e calendário](docs/images/desktop.png)
 
-- **Tarefas e checklist:** lista compacta com conclusão por toque. As tarefas aparecem primeiro; o campo de adicionar fica abaixo. Acrescente descrição e subtarefas pelo editor e marque cada etapa como concluída.
-- **Organização:** edite pelo modal, escolha prioridade baixa, média ou alta, destaque tarefas importantes e filtre ou ordene por prazo, prioridade, espaço e situação.
-- **Espaços pessoais:** Pessoal, Trabalho e Estudos vêm prontos; você pode criar, renomear, excluir e mover tarefas entre espaços.
-- **Calendário:** defina prazos opcionais e veja as tarefas de todos os espaços, identificadas por cores.
-- **Agenda do dia:** selecione uma data para consultar suas tarefas e conclua ou reabra itens diretamente na agenda.
-- **Pendências e histórico:** navegue por Hoje e Importantes, acompanhe atrasos e mantenha as tarefas concluídas no calendário.
-- **Visualizações:** alterne entre Lista, Semana e Calendário sem trocar a fonte de dados.
-- **Recorrência:** repita tarefas diariamente, semanalmente ou mensalmente. Ao concluir uma ocorrência, a próxima é criada com o checklist reiniciado.
-- **Preferências:** alterne entre modo claro e escuro pelo ícone de sol/lua no topo ou pelas configurações. A escolha fica salva neste navegador. Também é possível recolher painéis, usar lista compacta e incluir concluídas.
-- **Tempo hoje:** consulte temperatura atual, mínima, máxima e chance de chuva pela Open-Meteo. Ao abrir, permita a localização para ver a previsão da sua região automaticamente. O card fica aberto acima do calendário; a busca manual por cidade continua disponível em **Localização e opções**.
-- **Conta pessoal:** suas tarefas e espaços são salvos no banco e isolados das outras contas.
+<details>
+<summary>Ver modo claro e versão mobile</summary>
 
-No desktop, lista e calendário aparecem lado a lado. No celular, a navegação inferior
-permite alternar entre Tarefas, Semana e Calendário. O botão **Menu** abre um painel lateral com filtros, espaços e conta.
-A previsão aparece numa faixa compacta no celular; mínima, máxima e chance de chuva ficam em **Opções**.
+![MyPlan no modo claro](docs/images/light.png)
 
-## Começar a usar
+<img src="docs/images/mobile.png" alt="MyPlan no celular, com navegação inferior" width="390" />
 
-1. Crie uma conta ou entre com sua conta existente.
-2. Escolha um espaço, se desejar.
-3. Digite uma tarefa e pressione Enter.
-4. Novas tarefas vêm com a data de hoje. Para alterar, abra **Espaço, data e opções** ou edite a tarefa.
-5. Use o calendário para consultar as demandas de cada dia.
+</details>
 
-O **+** ao lado de Espaços abre o gerenciamento. Você pode transformar Estudos em Faculdade
-ou criar espaços para outros assuntos. Excluir um espaço mantém suas tarefas em **Sem espaço**;
-as opções removidas não voltam ao entrar novamente.
+## Experimentar
 
-O calendário reúne todos os espaços, mesmo quando a lista está filtrada. Os marcadores
-coloridos e a legenda identificam a origem das tarefas. Um marcador vazado indica que
-todas as tarefas daquele espaço no dia foram concluídas. **Ver tarefas deste dia** abre
-a lista do dia com todos os espaços; **Ver todas as datas** remove o filtro por data.
+O projeto inclui uma **demonstração sem cadastro** com dados fictícios. Na tela inicial, escolha **Experimentar demonstração**. Você pode editar tarefas, organizar espaços e explorar o calendário; as alterações ficam apenas na aba atual. **Restaurar exemplo** recomeça a demonstração e não altera nenhuma conta real.
 
-## Tecnologias
+Para experimentar localmente, basta Node.js 22.12+:
 
-- Interface: React, Vite e CSS.
-- API: Django REST Framework e autenticação JWT.
-- Banco local: SQLite, com opção de configurar PostgreSQL.
-- Verificação: testes da API Django, testes de datas com Node.js e fluxos de navegador com Playwright.
+```sh
+cd frontend
+npm ci
+npm run dev
+```
 
-## Executar localmente no Windows
+Abra **http://localhost:5173/?demo=1**. No PowerShell, use `npm.cmd` se a execução de `npm.ps1` estiver bloqueada. A demo não precisa de Python ou banco de dados. A publicação no Pages usa o [workflow de demonstração](.github/workflows/demo.yml); o [guia de publicação](docs/publicacao.md) explica a configuração do repositório.
 
-Pré-requisitos: Python 3.12 a 3.14 e Node.js 22.12+.
-O projeto foi validado neste computador com Python 3.14 e Node 24.
+## O que o planner faz
 
-Os comandos de instalação partem da pasta raiz do repositório:
+- Cria, edita, conclui e reabre tarefas com descrição, prioridade e checklist.
+- Organiza demandas em espaços pessoais, como Pessoal, Trabalho e Estudos.
+- Mostra tarefas em lista, semana e calendário, com agenda diária de todos os espaços.
+- Oferece busca, filtros, destaque de importantes e histórico de concluídas.
+- Repete tarefas diariamente, semanalmente ou mensalmente ao concluir uma ocorrência.
+- Permite desfazer a última exclusão e preserva rascunhos quando o salvamento falha.
+- Adapta a navegação ao celular e oferece temas claro e escuro.
+- Consulta o tempo pela localização autorizada ou por cidade escolhida manualmente.
+- Na versão com servidor, persiste tarefas e espaços isolados por conta, com autenticação JWT.
+
+## Decisões técnicas
+
+| Área | Implementação |
+| --- | --- |
+| Interface | React 19, Vite e CSS; componentes compartilhados entre os modos com API e demonstração |
+| API | Django 6, Django REST Framework e Simple JWT; validação e isolamento de dados no servidor |
+| Datas | Prazos pessoais usam `DateField`, sem horário, para preservar o dia entre fusos |
+| Recorrência | Conclusão e próxima ocorrência na mesma transação; vínculo impede duplicação ao reabrir |
+| Sessão | Renovação de token compartilhada entre requisições; alterações de conta invalidam renovações pendentes |
+| Persistência | SQLite no desenvolvimento e PostgreSQL no perfil de produção |
+| Demonstração | Adaptador Axios local e `sessionStorage`; dados fictícios separados da sessão real |
+| Publicação | GitHub Pages para demo; Docker, Gunicorn e WhiteNoise para a aplicação completa |
+| Qualidade | Testes de API, regras de datas/filtros/demo, Playwright e pipelines para Linux e Windows |
+
+```mermaid
+flowchart LR
+    UI[React: tarefas e calendário] --> Axios
+    Axios -->|Conta pessoal| API[Django REST + JWT]
+    API --> DB[(SQLite local / PostgreSQL produção)]
+    Axios -->|Demonstração| Demo[Adaptador local]
+    Demo --> Tab[sessionStorage da aba]
+    UI -->|Clima opcional, sem tokens MyPlan| Weather[Open-Meteo]
+```
+
+A demo ilustra a experiência do produto. As regras definitivas, a autenticação e a proteção dos dados pertencem à API. Mais detalhes em [banco de dados](docs/banco-de-dados.md) e [requisitos](docs/requisitos.md).
+
+## Executar com contas e banco
+
+Pré-requisitos: Python 3.12 a 3.14 e Node.js 22.12+. O ambiente local foi validado com Python 3.14 e Node 24; a CI usa Python 3.13 e Node 24.
+
+No Windows, a partir da raiz:
 
 ```powershell
 cd backend
 py -3.14 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe manage.py migrate
-cd ..\frontend
-npm.cmd ci
-```
-
-Em um terminal, a partir da raiz, inicie a API:
-
-```powershell
-cd backend
 .\.venv\Scripts\python.exe manage.py runserver
 ```
 
-Em outro terminal, a partir da raiz, inicie a interface:
+No Linux/macOS:
 
-```powershell
-cd frontend
-npm.cmd run dev
+```sh
+cd backend
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python manage.py migrate
+.venv/bin/python manage.py runserver
 ```
 
-Abra **http://localhost:5173**. No PowerShell, `npm.cmd` evita o bloqueio de execução de
-`npm.ps1`. O servidor Django padrão recarrega o código quando os arquivos são alterados.
-Após uma atualização com novas migrações, execute `manage.py migrate` com o Python da `.venv`.
+Em outro terminal, na pasta `frontend`, execute `npm ci` e `npm run dev`. Abra **http://localhost:5173**, crie uma conta e adicione a primeira tarefa. Uma conta nova recebe três espaços e pode usá-los ou criar os próprios.
 
-## Configuração e dados
-
-Os padrões permitem executar localmente sem instalar PostgreSQL. Os dados ficam em
-`backend/db.sqlite3`, que não é versionado.
-
-Para personalizar, copie `backend/.env.example` para `backend/.env` e
-`frontend/.env.example` para `frontend/.env` e reinicie os servidores.
-
-| Variável | Finalidade |
-| --- | --- |
-| `DJANGO_DEBUG` | Habilitar o modo de desenvolvimento. |
-| `SECRET_KEY` | Segredo exclusivo, obrigatório fora do desenvolvimento. |
-| `ALLOWED_HOSTS` | Hosts aceitos pela API, separados por vírgula. |
-| `CORS_ALLOWED_ORIGINS` | Origens da interface aceitas pela API, separadas por vírgula. |
-| `DB_ENGINE` | `sqlite` por padrão; `postgresql` usa as variáveis `DB_*` do exemplo. |
-| `VITE_API_URL` | URL da API, incluindo `/api/`. |
-
-Prazos são datas sem horário, evitando alteração de dia por conversões de fuso.
-A API define o usuário pela sessão e valida que o espaço escolhido pertence à mesma conta.
-Veja os relacionamentos em [Banco de dados](docs/banco-de-dados.md).
+Os padrões locais dispensam PostgreSQL. Os dados ficam em `backend/db.sqlite3`, ignorado pelo Git. Para personalizar, copie `backend/.env.example` para `backend/.env` e `frontend/.env.example` para `frontend/.env`. Na interface, `VITE_API_URL` define a URL da API, incluindo `/api/`. As variáveis `VITE_*` são públicas no build; não coloque segredos nelas.
 
 ## Verificações
 
-Na pasta `backend`:
+Na pasta `backend`, usando o Python da `.venv`:
 
-```powershell
-.\.venv\Scripts\python.exe manage.py check
-.\.venv\Scripts\python.exe manage.py makemigrations --check --dry-run
-.\.venv\Scripts\python.exe manage.py test
+```sh
+python manage.py check
+python manage.py makemigrations --check --dry-run
+python manage.py test
 ```
 
 Na pasta `frontend`:
 
-```powershell
-npm.cmd run lint
-npm.cmd test
-npm.cmd run build
-npx.cmd playwright install chromium
-npm.cmd run test:e2e
+```sh
+npm run lint
+npm test
+npm run build
+npx playwright install chromium
+npm run test:e2e
 ```
 
-Os testes de navegador usam portas próprias, 8001 e 5175, e o banco `e2e.sqlite3`,
-separado dos dados de uso local. A cobertura inclui cadastro, login, persistência,
-isolamento entre contas, checklist, espaços, calendário, falhas ao salvar e uso no celular.
+O Playwright prepara e encerra os servidores de teste, usa portas 8001 e 5175 e um banco `backend/e2e.sqlite3` separado. O Python é descoberto na `.venv` do backend ou no PATH; `PLAYWRIGHT_PYTHON` permite escolher outro executável. `npm run test:demo` executa apenas os cenários da demonstração.
 
-## Estado do projeto
+A CI verifica API com PostgreSQL, lint, testes, build e navegador no Linux; também executa os fluxos de navegador no Windows. A etapa Docker valida a configuração de produção e testa cadastro e persistência pela interface servida pelo container.
 
-O MyPlan está em desenvolvimento e disponível para teste local pelo navegador.
-Para acessar de outro aparelho, a aplicação precisa estar disponível por uma URL
-acessível a ele; `localhost` no celular aponta para o próprio celular.
+## Organização
 
-Publicação, instalação como aplicativo, suporte offline, recuperação de senha por email
-e integração com calendários externos são etapas futuras. O calendário atual organiza
-as tarefas cadastradas no MyPlan.
+```text
+backend/core/          modelos, regras, API, migrações e testes
+backend/config/        configurações local, e2e e produção
+frontend/src/          interface atual e adaptador de demonstração
+frontend/e2e/          fluxos de navegador e inicialização dos servidores
+frontend/legacy/       interface anterior de equipes, fora do bundle atual
+docs/                 arquitetura, imagens, requisitos e publicação
+.github/workflows/    validações e publicação da demonstração
+```
 
-A proposta do produto está em [Requisitos](docs/requisitos.md).
+O projeto começou como DevDesk. O histórico e as migrações de equipes foram preservados; o produto atual é o planner pessoal MyPlan. As rotas de equipes ficam desativadas em produção. Veja a [delimitação do legado](frontend/legacy/README.md).
 
+## Limites da V1
 
-## Redesign e detalhes de uso
+- Não há recuperação de senha por email, sincronização com calendários externos ou suporte offline completo.
+- A próxima ocorrência nasce ao concluir a atual; não há agendamento em segundo plano.
+- A interface carrega o histórico completo; paginação é uma evolução para volumes maiores.
+- A demo não sincroniza dados entre abas ou aparelhos e não cria contas.
+- A aplicação com contas exige hospedagem e PostgreSQL persistente; veja [publicação](docs/publicacao.md).
 
-O [relatório de UI/UX](docs/redesign-ui-ux.md) descreve a análise, os arquivos alterados,
-a migração e as verificações realizadas. As preferências de layout são salvas neste
-navegador; os dados das tarefas continuam na API e no banco.
+## Clima e licença
 
-A recorrência exige prazo. Uma próxima ocorrência é criada somente ao concluir a atual,
-não por um processo em segundo plano. Se uma ocorrência estiver atrasada, o próximo prazo
-avança para uma data futura; a repetição semanal mantém o dia da semana e a mensal mantém
-o dia original, limitado ao último dia dos meses mais curtos.
+A previsão usa [Open-Meteo](https://open-meteo.com/), com geocodificação baseada no GeoNames. A localização depende da permissão do navegador; as coordenadas do dispositivo são arredondadas e ficam em memória. A busca manual funciona sem essa permissão. Tokens do MyPlan não acompanham essas requisições. A oferta gratuita do serviço tem [termos próprios](https://open-meteo.com/en/terms).
 
-Reabrir e concluir novamente uma ocorrência não duplica a próxima tarefa já existente.
-Desfazer a exclusão de uma ocorrência concluída que já gerou a próxima restaura o item
-como histórico sem repetição, preservando a próxima ocorrência independente.
-
-## Previsão do tempo
-
-O resumo consulta diretamente a [Open-Meteo](https://open-meteo.com/en/docs), sem chave de API,
-usando a localização aproximada após a permissão do navegador ou uma cidade escolhida manualmente. As coordenadas do dispositivo são arredondadas para duas casas decimais e ficam apenas na memória;
-a preferência de modo e as cidades escolhidas manualmente ficam salvas neste navegador.
-Ao negar a permissão, a busca por cidade continua disponível. A opção **Desativar tempo**
-interrompe o modo automático até a pessoa ativá-lo novamente.
-A busca de cidades usa a API de geocodificação da
-Open-Meteo, com dados do GeoNames. As requisições externas não incluem tokens do MyPlan.
-A previsão é atualizada a cada 30 minutos com a página visível e pode ser atualizada manualmente.
-Falhas do serviço não impedem o uso das tarefas. O resumo mostra o tempo de hoje na cidade
-escolhida, independentemente da data selecionada no calendário.
-
-A API gratuita é destinada a uso não comercial e tem limites de chamadas. Antes de uma
-oferta comercial, consulte os [termos da Open-Meteo](https://open-meteo.com/en/terms).
+Código sob [licença MIT](LICENSE). A fonte Inter inclui sua licença OFL em `frontend/public/fonts/LICENSE.txt`. Histórico de versões em [CHANGELOG.md](CHANGELOG.md).

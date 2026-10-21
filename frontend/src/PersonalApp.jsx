@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { api } from "./api";
+import { authStorage, isDemo } from "./session.js";
+import { resetDemo } from "./demo.js";
 import SpacesManager from "./SpacesManager";
 import Icon from "./Icon";
 import TaskRow from "./TaskRow";
@@ -129,6 +131,7 @@ function Login({ onLogin }) {
           {busy ? "Um instante…" : register ? "Criar conta" : "Entrar"}
           <Icon name="arrow" size={17} />
         </button>
+        <a className="secondary-button demo-link" href={`${import.meta.env.BASE_URL}?demo=1`}>Experimentar demonstração</a>
         <button
           className="switch-auth"
           disabled={busy}
@@ -1164,12 +1167,12 @@ export default function PersonalApp() {
     }
   }, [theme]);
   const [auth, setAuth] = useState(() => ({
-    token: localStorage.getItem("devdesk_token") || "",
-    username: localStorage.getItem("devdesk_username") || "",
+    token: authStorage.getItem("devdesk_token") || "",
+    username: authStorage.getItem("devdesk_username") || "",
   }));
   const logout = () => {
     ["devdesk_token", "devdesk_refresh_token", "devdesk_username"].forEach(
-      (key) => localStorage.removeItem(key),
+      (key) => authStorage.removeItem(key),
     );
     setAuth({ token: "", username: "" });
   };
@@ -1179,15 +1182,15 @@ export default function PersonalApp() {
     return () => window.removeEventListener("devdesk:session-expired", expired);
   }, []);
   const login = (tokens, username) => {
-    localStorage.setItem("devdesk_token", tokens.access);
-    localStorage.setItem("devdesk_refresh_token", tokens.refresh);
-    localStorage.setItem("devdesk_username", username);
+    authStorage.setItem("devdesk_token", tokens.access);
+    authStorage.setItem("devdesk_refresh_token", tokens.refresh);
+    authStorage.setItem("devdesk_username", username);
     setAuth({ token: tokens.access, username });
   };
   return (
     <div className="personal-app">
       <header className="brand-bar">
-        <a href="/" className="brand-link">
+        <a href={import.meta.env.BASE_URL} className="brand-link">
           MyPlan
         </a>
         <button
@@ -1202,11 +1205,18 @@ export default function PersonalApp() {
         </button>
         <span className="brand-caption">PLANNER PESSOAL</span>
       </header>
+      {isDemo && (
+        <aside className="demo-banner" aria-label="Modo de demonstração">
+          <span><strong>Demonstração</strong> · Dados fictícios, salvos apenas nesta aba.</span>
+          <button className="secondary-button" onClick={() => { resetDemo(sessionStorage); window.location.reload(); }}>Restaurar exemplo</button>
+          {import.meta.env.VITE_DEMO_ONLY !== "true" && <a href={import.meta.env.BASE_URL}>Voltar ao login</a>}
+        </aside>
+      )}
       {auth.token ? (
         <TaskSpace
           key={auth.username}
           username={auth.username}
-          onLogout={logout}
+          onLogout={isDemo ? () => { window.location.href = import.meta.env.BASE_URL; } : logout}
           theme={theme}
           onThemeChange={setTheme}
         />

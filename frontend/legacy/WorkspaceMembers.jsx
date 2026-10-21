@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api } from './api';
+import { api } from '../src/api';
 
 export default function WorkspaceMembers({ workspace, onChange }) {
   const [username, setUsername] = useState('');

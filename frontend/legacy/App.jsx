@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { api } from './api';
-import { toApiDate, toLocalDateTime } from './dates';
+import { api } from '../src/api';
+import { toApiDate, toLocalDateTime } from '../src/dates';
 import WorkspaceMembers from './WorkspaceMembers';
 import ProjectSetup from './ProjectSetup';
 import './index.css';

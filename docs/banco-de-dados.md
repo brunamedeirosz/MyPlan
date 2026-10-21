@@ -1,4 +1,37 @@
-# Banco de Dados — DevDesk
+# Banco de dados — MyPlan
+
+O domínio ativo é o planner pessoal. SQLite é o padrão local; o perfil
+`config.production` exige PostgreSQL persistente. O diagrama abaixo representa
+as entidades atuais; `der.png` é uma referência histórica do domínio de equipes.
+
+```mermaid
+erDiagram
+    USER ||--o{ ESPACO_PESSOAL : possui
+    USER ||--o{ ITEM_PESSOAL : possui
+    ESPACO_PESSOAL |o--o{ ITEM_PESSOAL : organiza
+    ITEM_PESSOAL |o--o| ITEM_PESSOAL : proxima_ocorrencia
+    ITEM_PESSOAL {
+        bigint id PK
+        bigint usuario_id FK
+        bigint espaco_id FK
+        string titulo
+        text descricao
+        string prioridade
+        json subtarefas
+        boolean concluida
+        boolean importante
+        date prazo
+        string recorrencia
+        date inicio_recorrencia
+        bigint proxima_ocorrencia_id FK
+        datetime criado_em
+    }
+```
+
+## Histórico: domínio de equipes
+
+Estas relações e suas migrações foram preservadas para manter os dados existentes.
+Suas rotas ficam desativadas no perfil de produção do MyPlan.
 
 - Usuário 1:N workspaces como gestor (`dono`).
 - Workspace N:N usuários como colaboradores (`membros`).
@@ -38,7 +71,7 @@ A API valida que o espaço de uma tarefa pertence ao mesmo usuário autenticado.
 
 ItemPessoal.prazo é um DateField opcional, introduzido na migração 0012.
 A API recebe YYYY-MM-DD ou null, sem conversão para UTC. A interface monta o calendário
-a partir das tarefas do espaço selecionado; não há tabela separada de eventos externos.
+a partir das tarefas de todos os espaços, mesmo com a lista filtrada; não há tabela separada de eventos externos.
 
 
 ## Descrição, checklist, prioridade e recorrência

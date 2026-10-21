@@ -56,10 +56,12 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+ENABLE_LEGACY_API = os.getenv('ENABLE_LEGACY_API', 'true').lower() in ('true', '1', 'yes')
 CORS_ALLOWED_ORIGINS = [origin.strip() for origin in os.getenv(
     'CORS_ALLOWED_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173'
 ).split(',') if origin.strip()]
 REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_RATES': {'login': '30/min', 'registration': '10/hour'},
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
 }
