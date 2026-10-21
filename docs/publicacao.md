@@ -2,6 +2,9 @@
 
 ## Demonstração no GitHub Pages
 
+Disponível em **https://brunamedeirosz.github.io/MyPlan/**. O repositório público é
+[brunamedeirosz/MyPlan](https://github.com/brunamedeirosz/MyPlan).
+
 A demonstração usa os mesmos componentes React e um adaptador Axios local.
 `VITE_DEMO_ONLY=true` abre o planner com exemplos e desabilita o fluxo de contas.
 Tarefas e espaços ficam em `sessionStorage`, separados dos tokens reais em
@@ -38,8 +41,9 @@ com `Remove-Item Env:VITE_DEMO_ONLY, Env:VITE_BASE_PATH` antes de compilar a ver
 O `Dockerfile` compila React e executa Django/Gunicorn, servindo a interface e a API
 no mesmo domínio. A interface usa `/api/`, e WhiteNoise serve o build e os estáticos
 do admin. É necessário Docker em ambiente Linux e PostgreSQL persistente externo.
-O Docker não está instalado no computador usado nesta revisão; a construção e o
-teste integrado da imagem estão previstos na CI Linux.
+O Docker não está instalado no computador usado nesta revisão. A construção e o
+teste integrado da imagem com PostgreSQL passaram na
+[CI Linux](https://github.com/brunamedeirosz/MyPlan/actions/runs/39534670959).
 
 Crie um arquivo privado de ambiente fora do Git, com:
 

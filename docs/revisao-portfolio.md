@@ -18,8 +18,10 @@ foi testado em `/MyPlan/`, incluindo fonte, edição e persistência sem chamada
 
 `check --deploy --fail-level WARNING` aprovou o perfil de produção; somente W021
 fica silenciado deliberadamente porque HSTS preload exige decisão sobre o domínio.
-Docker e PostgreSQL não estão disponíveis localmente; a verificação da imagem e do
-banco de produção está configurada na CI e deve ser confirmada no GitHub.
+Docker e PostgreSQL não estão disponíveis localmente; a verificação da imagem,
+do banco e da interface com contas passou na
+[CI do GitHub](https://github.com/brunamedeirosz/MyPlan/actions/runs/39534670959),
+assim como os testes de navegador em Linux e Windows.
 
 A auditoria npm encontrou falhas altas em `follow-redirects` e Vite. Ambos foram
 atualizados dentro das faixas permitidas; a auditoria completa passou sem alertas.
@@ -27,10 +29,15 @@ Uma busca por padrões conhecidos de tokens e chaves no histórico Git não enco
 ocorrências; não havia `.env`, chaves privadas ou bancos SQLite no histórico.
 Essa busca limitada não equivale a uma auditoria completa de segredos.
 
-O remoto antigo redireciona para `brunamedeirosz/MyPlan`, que está privado.
-A disponibilização pública do repositório e da demonstração depende da decisão da
-mantenedora. A aplicação com contas ainda exige hospedagem e PostgreSQL próprios;
-o modo de demonstração pode ser publicado separadamente no Pages.
+O remoto foi atualizado para `brunamedeirosz/MyPlan`. Após autorização da mantenedora,
+o repositório foi tornado público e o Pages habilitado para a demonstração em
+`https://brunamedeirosz.github.io/MyPlan/`. A aplicação com contas ainda exige
+hospedagem e PostgreSQL próprios; o modo de demonstração é publicado separadamente.
+
+A [publicação do Pages](https://github.com/brunamedeirosz/MyPlan/actions/runs/39535044793)
+foi concluída. A URL HTTPS foi validada no Chromium: criação de tarefa, persistência
+após recarregar, largura de 390 px, visão semanal e restauração do exemplo passaram,
+sem erros de JavaScript nem chamadas à API Django.
 
 ## Diagnóstico inicial
 

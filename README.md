@@ -18,6 +18,8 @@
 
 ## Experimentar
 
+[**Abrir demonstração online →**](https://brunamedeirosz.github.io/MyPlan/)
+
 O projeto inclui uma **demonstração sem cadastro** com dados fictícios. Na tela inicial, escolha **Experimentar demonstração**. Você pode editar tarefas, organizar espaços e explorar o calendário; as alterações ficam apenas na aba atual. **Restaurar exemplo** recomeça a demonstração e não altera nenhuma conta real.
 
 Para experimentar localmente, basta Node.js 22.12+:
