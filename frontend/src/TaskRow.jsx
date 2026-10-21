@@ -1,4 +1,6 @@
+import { useState } from "react";
 import Icon from "./Icon";
+import TaskActions from "./TaskActions";
 import { dueLabel } from "./calendarDates";
 import { spaceColor } from "./spaceColors";
 import { priorityLabels } from "./plannerFilters";
@@ -13,6 +15,7 @@ export default function TaskRow({
   onFavorite,
   onDelete,
 }) {
+  const [actionsOpen, setActionsOpen] = useState(false);
   const checklist = item.subtarefas || [];
   const completed = checklist.filter((task) => task.concluida).length;
   return (
@@ -32,6 +35,15 @@ export default function TaskRow({
         </button>
         {item.descricao && <p className="task-description">{item.descricao}</p>}
         <div className="task-metadata">
+          {item.importante && (
+            <span
+              className="mobile-important-mark"
+              role="img"
+              aria-label="Tarefa importante"
+            >
+              <Icon name="star" size={13} fill="currentColor" />
+            </span>
+          )}
           <small className="task-space-name">
             <i style={{ background: spaceColor(item.espaco) }} />
             {spaces.find((space) => space.id === item.espaco)?.nome ||
@@ -108,6 +120,26 @@ export default function TaskRow({
           <Icon name="trash" size={16} />
         </button>
       </div>
+      <button
+        className="icon-button task-more-mobile"
+        aria-label={`Ações de ${item.titulo}`}
+        aria-haspopup="dialog"
+        aria-expanded={actionsOpen}
+        disabled={busy}
+        onClick={() => setActionsOpen(true)}
+      >
+        <span aria-hidden="true">⋯</span>
+      </button>
+      {actionsOpen && (
+        <TaskActions
+          item={item}
+          busy={busy}
+          onClose={() => setActionsOpen(false)}
+          onEdit={onEdit}
+          onFavorite={onFavorite}
+          onDelete={onDelete}
+        />
+      )}
     </li>
   );
 }

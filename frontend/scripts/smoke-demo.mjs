@@ -37,7 +37,7 @@ try {
     await page.getByRole('button', { name: 'Ativar modo claro', exact: true }).click();
     await page.screenshot({ path: resolve(images, 'light.png'), fullPage: true });
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.screenshot({ path: resolve(images, 'mobile.png'), fullPage: true });
+    await page.screenshot({ path: resolve(images, 'mobile.png'), fullPage: false });
   }
   await page.getByRole('textbox', { name: 'Nova tarefa', exact: true }).fill('Testar o build publicado');
   await page.getByRole('textbox', { name: 'Nova tarefa', exact: true }).press('Enter');

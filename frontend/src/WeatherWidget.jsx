@@ -174,7 +174,7 @@ export default function WeatherWidget({ username }) {
   };
   return (
     <section
-      className="weather-widget weather-card"
+      className={`weather-widget weather-card ${city ? "has-city" : "without-city"}`}
       aria-label="Previsão do tempo"
     >
       <div className="weather-heading">
@@ -221,7 +221,10 @@ export default function WeatherWidget({ username }) {
       </div>
 
       <details className="weather-settings" ref={details}>
-        <summary>{city ? "Opções" : "Escolher localização"}</summary>
+        <summary>
+          <span className="weather-summary-desktop">{city ? "Opções" : "Escolher localização"}</span>
+          <span className="weather-summary-mobile"><Icon name="cloud" size={17} />{city ? "Opções" : "Adicionar previsão do tempo"}</span>
+        </summary>
         <div className="weather-mobile-details">
           {city && <p className="weather-place">{city.name}</p>}
           {weather && <WeatherStats weather={weather} />}

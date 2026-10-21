@@ -47,3 +47,43 @@ test('portfolio: exemplo funciona em desktop e celular nos dois temas', async ({
   await page.getByRole('button', { name: 'Calendário', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'Calendário', exact: true })).toBeVisible();
 });
+
+test('celular: ações acessíveis, foco, exclusão e navegação sem transbordamento', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?demo=1');
+  const title = 'Planejar a semana com calma';
+  const more = page.getByRole('button', { name: `Ações de ${title}`, exact: true });
+  await more.click();
+  const actions = page.getByRole('dialog', { name: title, exact: true });
+  await expect(actions).toBeVisible();
+  await expect(actions.getByRole('button', { name: `Editar tarefa: ${title}`, exact: true })).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(actions).not.toBeVisible();
+  await expect(more).toBeFocused();
+  await more.click();
+  await actions.getByRole('button', { name: `Remover dos importantes: ${title}`, exact: true }).click();
+  await expect(actions).not.toBeVisible();
+  await more.click();
+  await expect(actions.getByRole('button', { name: `Marcar como importante: ${title}`, exact: true })).toHaveAttribute('aria-pressed', 'false');
+  await actions.getByRole('button', { name: `Editar tarefa: ${title}`, exact: true }).click();
+  await expect(page.getByLabel('Descrição', { exact: true })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await more.click();
+  await actions.getByRole('button', { name: `Excluir tarefa: ${title}`, exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Excluir esta tarefa?' })).toBeVisible();
+  await page.getByRole('button', { name: 'Cancelar', exact: true }).click();
+  await expect(more).toBeVisible();
+
+  for (const width of [360, 390, 430]) {
+    await page.setViewportSize({ width, height: 1000 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    const nav = await page.getByRole('navigation', { name: 'Alternar visualização' }).boundingBox();
+    expect(Math.round(nav.y + nav.height)).toBe(1000);
+    for (const button of [more, page.getByRole('button', { name: `Concluir ${title}`, exact: true }), page.getByRole('button', { name: 'Abrir menu', exact: true })]) {
+      const box = await button.boundingBox();
+      expect(box.width).toBeGreaterThanOrEqual(44);
+      expect(box.height).toBeGreaterThanOrEqual(44);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBe(1000);
+  }
+});

@@ -769,7 +769,7 @@ test("redesign funciona em notebook tablet e smartphone com áreas acessíveis",
       await page.getByRole("button", { name: "Tarefas", exact: true }).click();
     }
   }
-  await page.getByRole("button", { name: /Editar Uma demanda/ }).click();
+  await page.getByRole("button", { name: /^Uma demanda com título longo/ }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   expect(
     await page

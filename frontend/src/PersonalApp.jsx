@@ -148,6 +148,36 @@ function Login({ onLogin }) {
   );
 }
 
+function PlannerHeader({ theme, onThemeChange, menuButton }) {
+  return (
+    <header className="brand-bar">
+      {menuButton}
+      <a href={import.meta.env.BASE_URL} className="brand-link">MyPlan</a>
+      <button className="icon-button theme-toggle"
+        aria-label={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
+        title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
+        onClick={() => onThemeChange(theme === "dark" ? "light" : "dark")}>
+        <Icon name={theme === "dark" ? "sun" : "moon"} size={20} />
+      </button>
+      <span className="brand-caption">PLANNER PESSOAL</span>
+    </header>
+  );
+}
+
+function DemoBanner() {
+  return (
+    <aside className="demo-banner" aria-label="Modo de demonstração">
+      <span className="demo-description"><strong>Demonstração</strong> · Dados fictícios, salvos apenas nesta aba.</span>
+      <span className="demo-mobile-label">Modo de demonstração</span>
+      <button className="secondary-button" aria-label="Restaurar exemplo"
+        onClick={() => { resetDemo(sessionStorage); window.location.reload(); }}>
+        <Icon name="repeat" size={14} /><span className="demo-reset-desktop">Restaurar exemplo</span><span className="demo-reset-mobile">Restaurar</span>
+      </button>
+      {import.meta.env.VITE_DEMO_ONLY !== "true" && <a className="demo-exit" href={import.meta.env.BASE_URL}>Voltar ao login</a>}
+    </aside>
+  );
+}
+
 function TaskSpace({ username, onLogout, theme, onThemeChange }) {
   const [items, setItems] = useState([]);
   const [spaces, setSpaces] = useState([]);
@@ -223,7 +253,7 @@ function TaskSpace({ username, onLogout, theme, onThemeChange }) {
     const opener = menuToggle.current;
     const background = [
       ...document.querySelectorAll(
-        ".brand-bar, .layout-controls, .mobile-view-switch, .task-content, .calendar-panel",
+        ".brand-bar, .demo-banner, .layout-controls, .mobile-view-switch, .task-content, .calendar-panel",
       ),
     ];
     const oldInert = background.map((item) => item.inert);
@@ -456,6 +486,7 @@ function TaskSpace({ username, onLogout, theme, onThemeChange }) {
     sort,
     spaces,
   );
+  const visiblePendingCount = visible.filter(item => !item.concluida).length;
   const completedMatches = filterTasks(items, {
     ...context,
     section: "done",
@@ -518,7 +549,15 @@ function TaskSpace({ username, onLogout, theme, onThemeChange }) {
   );
 
   return (
-    <div
+    <>
+      <PlannerHeader theme={theme} onThemeChange={onThemeChange} menuButton={
+        <button ref={menuToggle} className="icon-button mobile-menu-toggle" aria-controls="planner-sidebar"
+          aria-label="Abrir menu" aria-expanded={mobileMenu} onClick={() => setMobileMenu(!mobileMenu)}>
+          <Icon name="menu" size={22} />
+        </button>
+      } />
+      {isDemo && <DemoBanner />}
+      <div
       className={`workspace-layout with-calendar ${calendarView ? "view-calendar" : "view-tasks"} ${sidebarCollapsed ? "sidebar-collapsed" : ""} ${calendarCollapsed ? "calendar-collapsed" : ""} ${mobileMenu ? "mobile-menu-open" : ""} ${preferences.compact ? "compact-tasks" : ""}`}
     >
       <div className="layout-controls">
@@ -534,17 +573,6 @@ function TaskSpace({ username, onLogout, theme, onThemeChange }) {
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
         >
           <Icon name="panel" size={17} />
-        </button>
-        <button
-          ref={menuToggle}
-          className="icon-button mobile-menu-toggle"
-          aria-controls="planner-sidebar"
-          aria-label="Abrir menu"
-          aria-expanded={mobileMenu}
-          onClick={() => setMobileMenu(!mobileMenu)}
-        >
-          <Icon name="list" size={19} />
-          <span>Menu</span>
         </button>
         <span>Meu planner</span>
         <button
@@ -563,13 +591,13 @@ function TaskSpace({ username, onLogout, theme, onThemeChange }) {
       </div>
       <nav className="mobile-view-switch" aria-label="Alternar visualização">
         <button aria-pressed={view === "list"} onClick={() => setView("list")}>
-          Tarefas
+          <Icon name="list" size={20} /><span>Tarefas</span>
         </button>
         <button aria-pressed={view === "week"} onClick={() => setView("week")}>
-          Semana
+          <Icon name="week" size={20} /><span>Semana</span>
         </button>
         <button aria-pressed={calendarView} onClick={() => setView("month")}>
-          Calendário
+          <Icon name="calendar" size={20} /><span>Calendário</span>
         </button>
       </nav>
       {mobileMenu && (
@@ -738,6 +766,7 @@ function TaskSpace({ username, onLogout, theme, onThemeChange }) {
             </h1>
             <div className="date-label">{today}</div>
           </div>
+          <span className="mobile-task-count">{visiblePendingCount} {visiblePendingCount === 1 ? "pendente" : "pendentes"}</span>
         </div>
         <div className="workspace-toolbar">
           <div
@@ -1147,7 +1176,8 @@ function TaskSpace({ username, onLogout, theme, onThemeChange }) {
           </button>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
 
@@ -1189,29 +1219,6 @@ export default function PersonalApp() {
   };
   return (
     <div className="personal-app">
-      <header className="brand-bar">
-        <a href={import.meta.env.BASE_URL} className="brand-link">
-          MyPlan
-        </a>
-        <button
-          className="icon-button theme-toggle"
-          aria-label={
-            theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"
-          }
-          title={theme === "dark" ? "Ativar modo claro" : "Ativar modo escuro"}
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-        >
-          <Icon name={theme === "dark" ? "sun" : "moon"} size={19} />
-        </button>
-        <span className="brand-caption">PLANNER PESSOAL</span>
-      </header>
-      {isDemo && (
-        <aside className="demo-banner" aria-label="Modo de demonstração">
-          <span><strong>Demonstração</strong> · Dados fictícios, salvos apenas nesta aba.</span>
-          <button className="secondary-button" onClick={() => { resetDemo(sessionStorage); window.location.reload(); }}>Restaurar exemplo</button>
-          {import.meta.env.VITE_DEMO_ONLY !== "true" && <a href={import.meta.env.BASE_URL}>Voltar ao login</a>}
-        </aside>
-      )}
       {auth.token ? (
         <TaskSpace
           key={auth.username}
@@ -1221,7 +1228,7 @@ export default function PersonalApp() {
           onThemeChange={setTheme}
         />
       ) : (
-        <Login onLogin={login} />
+        <><PlannerHeader theme={theme} onThemeChange={setTheme} /><Login onLogin={login} /></>
       )}
     </div>
   );

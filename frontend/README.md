@@ -12,6 +12,8 @@ Consulte o [README principal](../README.md) para instalação e execução.
 - `src/SpacesManager.jsx`: criação, renomeação e exclusão de espaços.
 - `src/TaskCalendar.jsx`: calendário e agenda diária de todos os espaços.
 - `src/planner.css`: estilos ativos consolidados e tokens do tema.
+- `src/mobile.css`: experiência mobile, cartões, navegação e menu de ações para toque.
+- `src/TaskActions.jsx`: ações da tarefa em diálogo mobile acessível.
 - `src/Icon.jsx`, `src/TaskRow.jsx` e `src/TaskEditor.jsx`: componentes reutilizáveis de ícones, tarefas e edição.
 - `src/TaskViews.jsx` e `src/plannerFilters.js`: visões e regras compartilhadas de filtro, agrupamento e ordenação.
 - `src/PlannerDialogs.jsx`: confirmação de exclusão e preferências.

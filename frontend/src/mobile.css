@@ -1,0 +1,115 @@
+/* Mobile layout: one header, readable task cards and controls sized for touch. */
+.mobile-task-count,
+.demo-mobile-label,
+.demo-reset-mobile,
+.weather-summary-mobile,
+.task-more-mobile,
+.mobile-important-mark { display: none; }
+
+.demo-banner .secondary-button { display: inline-flex; align-items: center; gap: 7px; }
+
+.task-actions-dialog {
+  width: min(420px, calc(100% - 24px));
+  max-height: calc(100dvh - 40px);
+  margin: auto auto 12px;
+  padding: 24px 20px max(20px, env(safe-area-inset-bottom));
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  box-shadow: 0 16px 60px #0004;
+  overflow-y: auto;
+}
+.task-actions-dialog::backdrop { background: #0007; backdrop-filter: blur(3px); }
+.task-actions-heading h2 { margin: 0 0 20px; font-size: 18px; line-height: 1.4; overflow-wrap: anywhere; }
+.task-actions-list { display: grid; gap: 6px; }
+.task-action-button {
+  width: 100%; min-height: 52px; padding: 12px;
+  display: flex; align-items: center; gap: 12px;
+  border: 0; border-radius: 12px; background: var(--control);
+  color: var(--text); text-align: left; font-size: 15px;
+}
+.task-action-button:hover { background: var(--border); }
+.task-action-delete { color: var(--danger); }
+.task-actions-cancel { width: 100%; min-height: 48px; margin-top: 16px; font-size: 15px; }
+
+@media (max-width: 700px) {
+  html { scroll-padding-bottom: 100px; }
+  .personal-app { min-height: 100dvh; display: flex; flex-direction: column; }
+  .brand-bar { flex-shrink: 0; height: 60px; padding: 0 16px; gap: 10px; }
+  .brand-bar .brand-link { font-size: 24px; letter-spacing: -1.1px; }
+  .brand-bar .mobile-menu-toggle { display: inline-flex; width: 44px; height: 44px; padding: 10px; }
+  .brand-bar .theme-toggle { width: 44px; height: 44px; margin-left: auto; border-radius: 14px; }
+  .workspace-layout.with-calendar { flex: 1; min-height: 0; padding-bottom: calc(74px + env(safe-area-inset-bottom)); }
+  .workspace-layout > .layout-controls { display: none; }
+
+  .demo-banner { min-height: 40px; flex-shrink: 0; padding: 0 16px; gap: 8px; flex-wrap: nowrap; justify-content: space-between; background: var(--control); }
+  .demo-description, .demo-reset-desktop, .demo-exit { display: none; }
+  .demo-mobile-label { display: inline; color: var(--muted); font-size: 11px; }
+  .demo-reset-mobile { display: inline; }
+  .demo-banner .secondary-button { min-height: 40px; padding: 6px 0 6px 8px; border: 0; background: transparent; font-size: 11px; border-radius: 6px; }
+
+  .task-content { padding: 20px 16px 12px; }
+  .content-heading { align-items: center; gap: 8px; margin: 0 0 18px; }
+  .content-heading h1 { font-size: 30px; letter-spacing: -1.2px; }
+  .content-heading .date-label { font-size: 12px; margin-top: 6px; line-height: 1.5; }
+  .mobile-task-count { display: inline-flex; padding: 7px 10px; border: 1px solid var(--border); border-radius: 20px; font-size: 11px; color: var(--secondary); white-space: nowrap; }
+
+  .task-list { gap: 6px; }
+  .task-list > .task-row, .compact-tasks .task-list > .task-row {
+    min-height: 72px; gap: 4px; padding: 8px 6px;
+    border: 1px solid var(--border); border-radius: 16px;
+    background: var(--panel); align-items: center;
+  }
+  .task-list > .task-row:last-child { border-bottom: 1px solid var(--border); }
+  .task-row .task-tools { display: none; }
+  .task-row .task-check { flex: 0 0 44px; width: 44px; height: 44px; }
+  .task-row .task-check::before { inset: 11px; border-radius: 7px; }
+  .task-row .task-title { flex: 1; min-width: 0; }
+  .task-row .task-open { min-height: 28px; padding: 1px 0; font-size: 15px; font-weight: 500; line-height: 1.45; }
+  .task-row .task-metadata { margin-top: 4px; gap: 4px 8px; }
+  .task-metadata .task-space-name, .task-metadata .task-due, .task-metadata .priority-pill, .task-metadata .subtask-progress { font-size: 11px; }
+  .task-metadata .subtask-progress { min-height: 24px; }
+  .task-row .task-more-mobile { display: inline-flex; flex: 0 0 44px; width: 44px; height: 44px; min-width: 44px; min-height: 44px; color: var(--secondary); font-size: 24px; border-radius: 12px; }
+  .mobile-important-mark { display: inline-flex; align-items: center; color: var(--important); }
+  .task-group-heading { margin: 18px 2px 10px; }
+  .task-group-heading h2 { font-size: 14px; }
+
+  .task-composer { margin-top: 18px; border-radius: 16px; background: var(--panel); border-color: var(--border-strong); }
+  .task-composer .add-task { min-height: 58px; padding: 6px 8px 6px 14px; gap: 10px; }
+  .task-composer .add-outline svg { width: 19px; height: 19px; }
+  .task-composer .add-task input { font-size: 16px; min-height: 44px; }
+  .task-composer .add-button { width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; }
+  .task-composer .add-button svg { width: 20px; height: 20px; }
+  .task-composer .add-button::after { display: none; }
+  .task-composer .add-button:not(:disabled) { background: var(--text); color: var(--bg); }
+  .task-composer .composer-options > summary { min-height: 40px; padding: 10px 16px; font-size: 12px; border-top: 1px solid var(--border); }
+  .composer-options .task-space-picker { padding: 12px; gap: 10px; }
+  .composer-options .task-space-picker select, .composer-options .task-space-picker input[type="date"] { min-height: 44px; font-size: 16px; max-width: 100%; }
+
+  .list-toolbar { margin-top: 12px; gap: 10px; }
+  .list-toolbar .search-box { min-height: 48px; flex: 1; gap: 8px; padding: 0 12px; border-radius: 12px; background: var(--control); }
+  .list-toolbar .search-box input { width: 100%; min-width: 0; font-size: 16px; }
+  .list-filter-options > summary { min-height: 48px; padding: 14px 12px; font-size: 13px; border-radius: 12px; border: 1px solid var(--border); }
+  .list-filter-options .filter-controls select { min-height: 44px; font-size: 16px; }
+
+  .view-tasks .calendar-panel, .view-tasks.calendar-collapsed .calendar-panel { padding: 0 16px 12px; }
+  .weather-summary-desktop { display: none; }
+  .weather-summary-mobile { display: inline-flex; align-items: center; gap: 10px; }
+  .weather-card.without-city { display: block; padding: 0; border-top: 0; }
+  .weather-card.without-city .weather-heading, .weather-card.without-city .weather-placeholder { display: none; }
+  .weather-card.without-city .weather-settings > summary { min-height: 48px; display: flex; align-items: center; padding: 12px 4px; font-size: 12px; }
+  .weather-card.without-city .weather-settings > summary::after { content: "+"; margin-left: auto; font-size: 20px; line-height: 1; }
+  .weather-card.without-city .weather-settings[open] > summary::after { content: "−"; }
+  .weather-card .weather-settings > summary { font-size: 12px; }
+  .weather-card .weather-settings[open] { padding: 12px; margin-top: 4px; border: 1px solid var(--border); border-radius: 16px; background: var(--panel); }
+  .weather-card .weather-settings[open] > summary { padding-top: 0; }
+  .weather-card .weather-now > span { font-size: 12px; }
+
+  .mobile-view-switch { min-height: 74px; padding: 8px 16px calc(8px + env(safe-area-inset-bottom)); gap: 12px; z-index: 40; }
+  .mobile-view-switch button { min-height: 54px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; font-size: 11px; font-weight: 500; border-radius: 14px; padding: 7px 4px; }
+  .mobile-view-switch button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+  .feedback-toast, .undo-toast { bottom: calc(90px + env(safe-area-inset-bottom)); }
+  .task-editor, .settings-dialog, .spaces-dialog { width: calc(100% - 24px); padding: 22px 18px; border-radius: 22px; }
+  .task-editor .field-label input, .task-editor .field-label select, .task-editor .field-label textarea { font-size: 16px; min-height: 44px; }
+}

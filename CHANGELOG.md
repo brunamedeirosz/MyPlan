@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.1 — 21/10/2026
+
+- Cabeçalho único no celular e faixa de demonstração mais discreta.
+- Cartões de tarefas legíveis e menu de ações com edição, importância e exclusão.
+- Controles de toque maiores e navegação inferior com ícones.
+- Criação, busca e filtros com maior destaque; clima opcional recolhido quando vazio.
+- Layout mobile ajustado à altura disponível, sem espaço extra causado pelo banner.
+- Testes para menu de ações, foco, tamanhos de toque e larguras de 360 a 430 px.
+
 ## 1.0.0 — 20/10/2026
 
 Primeira versão do MyPlan preparada para portfólio.
